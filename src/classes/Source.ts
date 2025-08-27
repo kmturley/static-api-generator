@@ -34,4 +34,22 @@ export default abstract class Source {
         return JSON.parse(text);
     }
   }
+
+  validate(target: TargetData[]) {
+    for (const item of target) {
+      if (this.config.validator) {
+        const result = this.config.validator(item);
+        if (result === true) {
+          this.items.push(item);
+        } else {
+          console.warn('--------');
+          console.warn(item);
+          console.warn(result);
+          console.warn('--------');
+        }
+      } else {
+        this.items.push(item);
+      }
+    }
+  }
 }

@@ -4,6 +4,7 @@ export interface SourceConfig {
   format: string;
   mapper: (source: SourceData) => TargetData[];
   paths: string[];
+  validator?: (item: TargetData) => any;
 }
 
 export type SourceData = any;

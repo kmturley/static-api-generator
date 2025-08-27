@@ -4,6 +4,7 @@ import SourceApi from './classes/SourceApi.js';
 import SourceFile from './classes/SourceFile.js';
 import SourceSite from './classes/SourceSite.js';
 import { SourceFormat } from './types/Source.js';
+import { TargetValidator } from './types/Target.js';
 
 const api = new SourceApi({
   format: SourceFormat.Json,
@@ -14,6 +15,7 @@ const api = new SourceApi({
       title: source.title,
     },
   ],
+  validator: TargetValidator,
 });
 await api.sync();
 console.log(api.get());
@@ -27,6 +29,7 @@ const file = new SourceFile({
       title: source.title,
     },
   ],
+  validator: TargetValidator,
 });
 await file.sync();
 console.log(file.get());
@@ -42,6 +45,7 @@ const site = new SourceSite({
       title: $('h1').text(),
     },
   ],
+  validator: TargetValidator,
 });
 await site.sync();
 console.log(site.get());

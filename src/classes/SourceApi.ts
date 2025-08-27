@@ -13,7 +13,7 @@ export default class SourceApi extends Source {
       const text: string = await response.text();
       const source: SourceData = this.parse(text);
       const target: TargetData[] = this.config.mapper(source);
-      this.items.push(...target);
+      this.validate(target);
     }
   }
 }

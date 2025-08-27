@@ -13,7 +13,7 @@ export default class SourceFile extends Source {
       const text: string = await readFile(path, 'utf-8');
       const source: SourceData = this.parse(text);
       const target: TargetData[] = this.config.mapper(source);
-      this.items.push(...target);
+      this.validate(target);
     }
   }
 }
