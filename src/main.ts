@@ -8,10 +8,12 @@ import { SourceFormat } from './types/Source.js';
 const api = new SourceApi({
   format: SourceFormat.Json,
   paths: ['https://jsonplaceholder.typicode.com/todos/1'],
-  mapper: item => ({
-    id: item.id,
-    title: item.title,
-  }),
+  mapper: source => [
+    {
+      id: source.id,
+      title: source.title,
+    },
+  ],
 });
 await api.sync();
 console.log(api.get());
@@ -19,10 +21,12 @@ console.log(api.get());
 const file = new SourceFile({
   format: SourceFormat.Yaml,
   paths: await glob('./src/data/*.yaml'),
-  mapper: item => ({
-    id: item.id,
-    title: item.title,
-  }),
+  mapper: source => [
+    {
+      id: source.id,
+      title: source.title,
+    },
+  ],
 });
 await file.sync();
 console.log(file.get());
@@ -32,10 +36,12 @@ const site = new SourceSite({
   paths: [
     'https://www.metacritic.com/game/the-legend-of-zelda-ocarina-of-time/',
   ],
-  mapper: $ => ({
-    id: 1,
-    title: $('h1').text(),
-  }),
+  mapper: $ => [
+    {
+      id: 1,
+      title: $('h1').text(),
+    },
+  ],
 });
 await site.sync();
 console.log(site.get());

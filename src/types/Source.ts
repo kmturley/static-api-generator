@@ -2,7 +2,7 @@ import { TargetData } from './Target.js';
 
 export interface SourceConfig {
   format: string;
-  mapper: (item: SourceData) => TargetData;
+  mapper: (source: SourceData) => TargetData[];
   paths: string[];
 }
 

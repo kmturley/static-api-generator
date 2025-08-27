@@ -1,4 +1,5 @@
 import { SourceConfig, SourceData } from '../types/Source.js';
+import { TargetData } from '../types/Target.js';
 import Source from './Source.js';
 
 export default class SourceApi extends Source {
@@ -7,13 +8,12 @@ export default class SourceApi extends Source {
   }
 
   async sync() {
-    const items: SourceData[] = [];
     for (const path of this.config.paths) {
       const response: Response = await fetch(path);
       const text: string = await response.text();
-      const item: SourceData = this.parse(text);
-      items.push(item);
+      const source: SourceData = this.parse(text);
+      const target: TargetData[] = this.config.mapper(source);
+      this.items.push(...target);
     }
-    this.items = items.map(this.config.mapper);
   }
 }

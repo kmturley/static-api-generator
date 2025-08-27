@@ -1,4 +1,5 @@
-import { SourceConfig, SourceData } from '../types/Source.js';
+import { SourceConfig } from '../types/Source.js';
+import { TargetData } from '../types/Target.js';
 import Source from './Source.js';
 import { CheerioCrawler } from 'crawlee';
 
@@ -8,14 +9,15 @@ export default class SourceSite extends Source {
   }
 
   async sync() {
-    const items: SourceData[] = [];
+    const config = this.config;
+    const items = this.items;
     const crawler = new CheerioCrawler({
       async requestHandler({ $ }) {
-        items.push($);
+        const target: TargetData[] = config.mapper($);
+        items.push(...target);
       },
       maxRequestsPerCrawl: 1,
     });
     await crawler.run(this.config.paths);
-    this.items = items.map(this.config.mapper);
   }
 }
