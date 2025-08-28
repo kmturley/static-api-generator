@@ -1,11 +1,12 @@
-// import Api from "./classes/Api.js";
 import { glob } from 'glob';
 import SourceApi from './classes/SourceApi.js';
 import SourceFile from './classes/SourceFile.js';
 import SourceSite from './classes/SourceSite.js';
 import { SourceFormat } from './types/Source.js';
 import { TargetValidator } from './types/Target.js';
+import Registry from './classes/Registry.js';
 
+// Api example
 const api = new SourceApi({
   format: SourceFormat.Json,
   paths: ['https://jsonplaceholder.typicode.com/todos/1'],
@@ -20,6 +21,7 @@ const api = new SourceApi({
 await api.sync();
 console.log(api.get());
 
+// File example
 const file = new SourceFile({
   format: SourceFormat.Yaml,
   paths: await glob('./src/data/*.yaml'),
@@ -27,6 +29,8 @@ const file = new SourceFile({
     {
       id: source.id,
       title: source.title,
+      author: source.author,
+      year: source.year,
     },
   ],
   validator: TargetValidator,
@@ -34,6 +38,7 @@ const file = new SourceFile({
 await file.sync();
 console.log(file.get());
 
+// Site example
 const site = new SourceSite({
   format: SourceFormat.Html,
   paths: [
@@ -41,7 +46,7 @@ const site = new SourceSite({
   ],
   mapper: $ => [
     {
-      id: 1,
+      id: 2,
       title: $('h1').text(),
     },
   ],
@@ -50,7 +55,9 @@ const site = new SourceSite({
 await site.sync();
 console.log(site.get());
 
-// const api = new Api();
-// api.addSource(api);
-// api.addSource(file);
-// api.addSource(site);
+const registry = new Registry();
+registry.add('books', api.get());
+registry.add('books', file.get());
+registry.add('books', site.get());
+
+console.log(registry.get('books'));

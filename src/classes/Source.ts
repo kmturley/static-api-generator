@@ -16,8 +16,18 @@ export default abstract class Source {
 
   abstract sync(): Promise<void>;
 
+  add(text: string) {
+    const source: SourceData = this.parse(text);
+    const target: TargetData[] = this.map(source);
+    this.validate(target);
+  }
+
   get() {
     return this.items;
+  }
+
+  getPaths() {
+    return this.config.paths;
   }
 
   parse(text: string): SourceData {
@@ -35,6 +45,10 @@ export default abstract class Source {
     }
   }
 
+  map(source: SourceData) {
+    return this.config.mapper(source);
+  }
+
   validate(target: TargetData[]) {
     for (const item of target) {
       if (this.config.validator) {
@@ -42,10 +56,7 @@ export default abstract class Source {
         if (result === true) {
           this.items.push(item);
         } else {
-          console.warn('--------');
-          console.warn(item);
-          console.warn(result);
-          console.warn('--------');
+          console.warn('--------', item, result, '--------');
         }
       } else {
         this.items.push(item);

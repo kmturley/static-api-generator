@@ -9,15 +9,15 @@ export default class SourceSite extends Source {
   }
 
   async sync() {
-    const config = this.config;
+    const mapper = this.config.mapper;
     const target: TargetData[] = [];
     const crawler = new CheerioCrawler({
       async requestHandler({ $ }) {
-        target.push(...config.mapper($));
+        target.push(...mapper($));
       },
       maxRequestsPerCrawl: 1,
     });
-    await crawler.run(this.config.paths);
+    await crawler.run(this.getPaths());
     this.validate(target);
   }
 }

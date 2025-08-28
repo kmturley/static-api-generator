@@ -1,7 +1,7 @@
 import { TargetData } from './Target.js';
 
 export interface SourceConfig {
-  format: string;
+  format: SourceFormat;
   mapper: (source: SourceData) => TargetData[];
   paths: string[];
   validator?: (item: TargetData) => any;
