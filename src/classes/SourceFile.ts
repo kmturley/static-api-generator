@@ -1,8 +1,8 @@
+import { readFile } from 'fs/promises';
 import { SourceConfig } from '../types/Source.js';
 import Source from './Source.js';
-import { readFile } from 'fs/promises';
 
-export default class SourceFile extends Source {
+export default class SourceFile<T> extends Source<T> {
   constructor(config: SourceConfig) {
     super(config);
   }
@@ -10,7 +10,7 @@ export default class SourceFile extends Source {
   async sync() {
     for (const path of this.getPaths()) {
       const text: string = await readFile(path, 'utf-8');
-      this.add(text);
+      this.import(text);
     }
   }
 }

@@ -3,11 +3,10 @@ import { xml2js } from 'xml-js';
 import yaml from 'js-yaml';
 import { SourceConfig, SourceFormat } from '../types/Source.js';
 import { SourceData } from '../types/Source.js';
-import { TargetData } from '../types/Target.js';
 
-export default abstract class Source {
+export default abstract class Source<T> {
   protected config: SourceConfig;
-  protected items: TargetData[];
+  protected items: T[];
 
   constructor(config: SourceConfig) {
     this.config = config;
@@ -16,9 +15,9 @@ export default abstract class Source {
 
   abstract sync(): Promise<void>;
 
-  add(text: string) {
+  import(text: string) {
     const source: SourceData = this.parse(text);
-    const target: TargetData[] = this.map(source);
+    const target: T[] = this.map(source);
     this.validate(target);
   }
 
@@ -39,7 +38,7 @@ export default abstract class Source {
       case SourceFormat.Yaml:
         return yaml.load(text);
       case SourceFormat.Xml:
-        return xml2js(text);
+        return xml2js(text, { ignoreDeclaration: true });
       default:
         return JSON.parse(text);
     }
@@ -49,7 +48,7 @@ export default abstract class Source {
     return this.config.mapper(source);
   }
 
-  validate(target: TargetData[]) {
+  validate(target: T[]) {
     for (const item of target) {
       if (this.config.validator) {
         const result = this.config.validator(item);

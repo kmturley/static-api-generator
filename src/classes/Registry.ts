@@ -1,7 +1,9 @@
-import { RegistryData } from '../types/Registry.js';
 import fs from 'fs/promises';
+import { js2xml } from 'xml-js';
 import path from 'path';
+import { stringify } from 'csv';
 import yaml from 'js-yaml';
+import { RegistryData } from '../types/Registry.js';
 import { SourceFormat } from '../types/Source.js';
 
 export default class Registry<T extends { id: number | string }> {
@@ -18,6 +20,26 @@ export default class Registry<T extends { id: number | string }> {
     for (const item of items) {
       const existing = this.records[type][item.id];
       this.records[type][item.id] = { ...existing, ...item };
+    }
+  }
+
+  async convert(obj: Partial<T>, format: SourceFormat): Promise<string> {
+    switch (format) {
+      case SourceFormat.Csv:
+        return new Promise<string>((resolve, reject) => {
+          stringify([obj], (err, output) => {
+            if (err) reject(err);
+            else resolve(output);
+          });
+        });
+      case SourceFormat.Json:
+        return JSON.stringify(obj, null, 2);
+      case SourceFormat.Yaml:
+        return yaml.dump(obj, { indent: 2 });
+      case SourceFormat.Xml:
+        return js2xml({ root: obj });
+      default:
+        return JSON.stringify(obj, null, 2);
     }
   }
 
@@ -43,16 +65,20 @@ export default class Registry<T extends { id: number | string }> {
     });
   }
 
-  async export(dir: string, format: SourceFormat = SourceFormat.Json) {
+  async export(pathTemplate: string) {
     for (const [type, collection] of Object.entries(this.records)) {
       for (const [id, record] of Object.entries(collection)) {
-        const filePath = path.join(dir, `${type}/${id}.${format}`);
+        const filePath = pathTemplate
+          .replace(/\$\{type\}/g, type)
+          .replace(/\$\{id\}/g, String(id));
+        const ext = path.extname(filePath).slice(1).toLowerCase();
+        const format: SourceFormat =
+          (Object.values(SourceFormat).find(f => f === ext) as SourceFormat) ??
+          SourceFormat.Json;
         await fs.mkdir(path.dirname(filePath), { recursive: true });
-        if (format === SourceFormat.Yaml) {
-          await fs.writeFile(filePath, yaml.dump(record), 'utf-8');
-          continue;
-        }
-        await fs.writeFile(filePath, JSON.stringify(record, null, 2), 'utf-8');
+        const content = await this.convert(record, format);
+        await fs.writeFile(filePath, content, 'utf-8');
+        console.log(`+ ${filePath}`);
       }
     }
   }

@@ -1,10 +1,8 @@
-import { TargetData } from './Target.js';
-
-export interface SourceConfig {
+export interface SourceConfig<T = any> {
   format: SourceFormat;
-  mapper: (source: SourceData) => TargetData[];
+  mapper: (source: SourceData) => T[];
   paths: string[];
-  validator?: (item: TargetData) => any;
+  validator?: (item: T) => any;
 }
 
 export type SourceData = any;

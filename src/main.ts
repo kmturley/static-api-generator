@@ -1,14 +1,18 @@
+// Step 2: Build static JSON API
+// This file loads data from existing curated yaml files,
+// validates and transforms and exports the data,
+// ready to deploy a static JSON API on GitHub pages.
+
 import { glob } from 'glob';
-import Registry from './classes/Registry';
-import SourceFile from './classes/SourceFile';
-import { SourceFormat } from './types/Source';
-import { TargetData, TargetValidator } from './types/Target';
+import Registry from './classes/Registry.js';
+import SourceFile from './classes/SourceFile.js';
+import { SourceFormat } from './types/Source.js';
+import { Book, BookValidator } from './types/Book.js';
 
-const registry = new Registry<TargetData>();
-
-const file = new SourceFile({
+// File import
+const file = new SourceFile<Book>({
   format: SourceFormat.Yaml,
-  paths: await glob('./src/data/*.yaml'),
+  paths: await glob('./data/books/*.yaml'),
   mapper: source => [
     {
       id: source.id,
@@ -17,9 +21,14 @@ const file = new SourceFile({
       year: source.year,
     },
   ],
-  validator: TargetValidator,
+  validator: BookValidator,
 });
 await file.sync();
-console.log(file.get());
 
+// add/merge sources into registry
+const registry = new Registry<Book>();
+registry.add('books', file.get());
 console.log('result', registry.get('books'));
+
+// export to static json API for deployment to GitHub pages
+await registry.export('./out/${type}/${id}.json');

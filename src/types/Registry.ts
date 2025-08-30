@@ -1,7 +1,5 @@
-import { TargetData } from './Target.js';
+export type RegistryCollection<T> = Record<string, T>;
 
-export type RegistryCollection<T = TargetData> = Record<string, T>;
-
-export interface RegistryData<T = TargetData> {
+export interface RegistryData<T> {
   [type: string]: RegistryCollection<T>;
 }
