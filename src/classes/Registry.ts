@@ -1,16 +1,35 @@
-import fs from 'fs/promises';
-import { js2xml } from 'xml-js';
-import path from 'path';
-import { stringify } from 'csv';
-import yaml from 'js-yaml';
 import { RegistryData } from '../types/Registry.js';
-import { SourceFormat } from '../types/Source.js';
+import Source from './Source.js';
+import Target from './Target.js';
 
 export default class Registry<T extends { id: number | string }> {
+  private sources: Source<T>[] = [];
+  private targets: Target<T>[] = [];
   protected records: RegistryData<T>;
 
   constructor() {
     this.records = {};
+  }
+
+  addSource(source: Source<T>) {
+    this.sources.push(source);
+  }
+
+  addTarget(target: Target<T>) {
+    this.targets.push(target);
+  }
+
+  async sync() {
+    await Promise.all(this.sources.map(s => s.sync()));
+    for (const source of this.sources) {
+      this.add(source.type, source.get());
+    }
+  }
+
+  async export() {
+    for (const target of this.targets) {
+      await target.export(this.records);
+    }
   }
 
   add(type: string, items: T[]) {
@@ -20,26 +39,6 @@ export default class Registry<T extends { id: number | string }> {
     for (const item of items) {
       const existing = this.records[type][item.id];
       this.records[type][item.id] = { ...existing, ...item };
-    }
-  }
-
-  async convert(obj: Partial<T>, format: SourceFormat): Promise<string> {
-    switch (format) {
-      case SourceFormat.Csv:
-        return new Promise<string>((resolve, reject) => {
-          stringify([obj], (err, output) => {
-            if (err) reject(err);
-            else resolve(output);
-          });
-        });
-      case SourceFormat.Json:
-        return JSON.stringify(obj, null, 2);
-      case SourceFormat.Yaml:
-        return yaml.dump(obj, { indent: 2 });
-      case SourceFormat.Xml:
-        return js2xml({ root: obj });
-      default:
-        return JSON.stringify(obj, null, 2);
     }
   }
 
@@ -63,23 +62,5 @@ export default class Registry<T extends { id: number | string }> {
       const str = JSON.stringify(item).toLowerCase();
       return q.split(/\s+/).every(word => str.includes(word));
     });
-  }
-
-  async export(pathTemplate: string) {
-    for (const [type, collection] of Object.entries(this.records)) {
-      for (const [id, record] of Object.entries(collection)) {
-        const filePath = pathTemplate
-          .replace(/\$\{type\}/g, type)
-          .replace(/\$\{id\}/g, String(id));
-        const ext = path.extname(filePath).slice(1).toLowerCase();
-        const format: SourceFormat =
-          (Object.values(SourceFormat).find(f => f === ext) as SourceFormat) ??
-          SourceFormat.Json;
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        const content = await this.convert(record, format);
-        await fs.writeFile(filePath, content, 'utf-8');
-        console.log(`+ ${filePath}`);
-      }
-    }
   }
 }

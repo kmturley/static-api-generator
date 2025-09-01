@@ -8,6 +8,8 @@ export default class SourceSite<T> extends Source<T> {
   }
 
   async sync() {
+    if (!this.config.mapper)
+      throw new Error('Mapper function is required for SourceSite');
     const mapper = this.config.mapper;
     const target: T[] = [];
     const crawler = new CheerioCrawler({

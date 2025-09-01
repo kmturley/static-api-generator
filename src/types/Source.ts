@@ -1,7 +1,8 @@
 export interface SourceConfig<T = any> {
+  type: string;
   format: SourceFormat;
-  mapper: (source: SourceData) => T[];
   paths: string[];
+  mapper?: (source: SourceData) => T[];
   validator?: (item: T) => any;
 }
 

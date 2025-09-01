@@ -7,10 +7,12 @@ import { SourceData } from '../types/Source.js';
 export default abstract class Source<T> {
   protected config: SourceConfig;
   protected items: T[];
+  type: string;
 
   constructor(config: SourceConfig) {
     this.config = config;
     this.items = [];
+    this.type = config.type;
   }
 
   abstract sync(): Promise<void>;
@@ -45,7 +47,7 @@ export default abstract class Source<T> {
   }
 
   map(source: SourceData) {
-    return this.config.mapper(source);
+    return this.config.mapper ? this.config.mapper(source) : [source];
   }
 
   validate(target: T[]) {

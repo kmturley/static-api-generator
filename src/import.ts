@@ -10,9 +10,11 @@ import SourceSite from './classes/SourceSite.js';
 import { SourceFormat } from './types/Source.js';
 import { Book, BookValidator } from './types/Book.js';
 import Registry from './classes/Registry.js';
+import Target from './classes/Target.js';
 
 // Api import
 const api = new SourceApi<Book>({
+  type: 'books',
   format: SourceFormat.Json,
   paths: ['https://jsonplaceholder.typicode.com/todos/1'],
   mapper: source => [
@@ -23,28 +25,18 @@ const api = new SourceApi<Book>({
   ],
   validator: BookValidator,
 });
-await api.sync();
-console.log(api.get());
 
 // File import
 const file = new SourceFile<Book>({
+  type: 'books',
   format: SourceFormat.Yaml,
   paths: await glob('./data/books/*.yaml'),
-  mapper: source => [
-    {
-      id: source.id,
-      title: source.title,
-      author: source.author,
-      year: source.year,
-    },
-  ],
   validator: BookValidator,
 });
-await file.sync();
-console.log(file.get());
 
 // Site import
 const site = new SourceSite<Book>({
+  type: 'books',
   format: SourceFormat.Html,
   paths: [
     'https://www.metacritic.com/game/the-legend-of-zelda-ocarina-of-time/',
@@ -57,15 +49,16 @@ const site = new SourceSite<Book>({
   ],
   validator: BookValidator,
 });
-await site.sync();
-console.log(site.get());
 
 // add/merge sources into registry
 const registry = new Registry<Book>();
-registry.add('books', api.get());
-registry.add('books', file.get());
-registry.add('books', site.get());
+registry.addSource(api);
+registry.addSource(file);
+registry.addSource(site);
+await registry.sync();
 console.log('result', registry.get('books'));
 
 // export merged data to yaml files for storage/curation
-await registry.export('./data/${type}/${id}.yaml');
+const data = new Target<Book>('./data/${type}/${id}.yaml');
+registry.addTarget(data);
+await registry.export();
