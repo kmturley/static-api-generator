@@ -1,7 +1,7 @@
 import { SourceConfig } from '../types/Source.js';
 import Source from './Source.js';
 
-export default class SourceApi<T> extends Source<T> {
+export default class SourceApi extends Source {
   constructor(config: SourceConfig) {
     super(config);
   }

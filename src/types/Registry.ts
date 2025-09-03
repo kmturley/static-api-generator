@@ -1,5 +1,13 @@
-export type RegistryCollection<T> = Record<string, T>;
+import { SourceConfig } from './Source';
+import { TargetConfig } from './Target';
 
-export interface RegistryData<T> {
-  [type: string]: RegistryCollection<T>;
+export interface RegistryConfig {
+  sources: SourceConfig[];
+  targets: TargetConfig[];
+}
+
+export type RegistryCollection = Record<string, any>;
+
+export interface RegistryData {
+  [schema: string]: RegistryCollection;
 }

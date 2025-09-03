@@ -1,9 +1,10 @@
-export interface SourceConfig<T = any> {
-  type: string;
-  format: SourceFormat;
+export interface SourceConfig {
+  schema: string;
   paths: string[];
-  mapper?: (source: SourceData) => T[];
-  validator?: (item: T) => any;
+  type?: string;
+  format?: SourceFormat;
+  mapper?: (source: SourceData) => any[];
+  validator?: (item: any) => any;
 }
 
 export type SourceData = any;

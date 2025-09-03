@@ -7,13 +7,13 @@ import yaml from 'js-yaml';
 import { SourceFormat } from '../types/Source.js';
 import { RegistryData } from '../types/Registry.js';
 
-export default class Target<T> {
+export default class Target {
   pathTemplate: string = '';
   constructor(pathTemplate: string) {
     this.pathTemplate = pathTemplate;
   }
 
-  async convert(obj: Partial<T>, format: SourceFormat): Promise<string> {
+  async convert(obj: any, format: SourceFormat): Promise<string> {
     switch (format) {
       case SourceFormat.Csv:
         return new Promise<string>((resolve, reject) => {
@@ -33,12 +33,14 @@ export default class Target<T> {
     }
   }
 
-  async export(records: RegistryData<T>) {
-    for (const [type, collection] of Object.entries(records)) {
+  async export(records: RegistryData) {
+    for (const [schema, collection] of Object.entries(records)) {
       for (const [id, record] of Object.entries(collection)) {
+        const sanitizedSchema = path.basename(schema);
+        const sanitizedId = path.basename(String(id));
         const filePath = this.pathTemplate
-          .replace(/\$\{type\}/g, type)
-          .replace(/\$\{id\}/g, String(id));
+          .replace(/\$\{schema\}/g, sanitizedSchema)
+          .replace(/\$\{id\}/g, sanitizedId);
         const ext = path.extname(filePath).slice(1).toLowerCase();
         const format: SourceFormat =
           (Object.values(SourceFormat).find(f => f === ext) as SourceFormat) ??

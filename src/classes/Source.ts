@@ -4,23 +4,23 @@ import yaml from 'js-yaml';
 import { SourceConfig, SourceFormat } from '../types/Source.js';
 import { SourceData } from '../types/Source.js';
 
-export default abstract class Source<T> {
+export default abstract class Source {
   protected config: SourceConfig;
-  protected items: T[];
-  type: string;
+  protected items: any[];
+  schema: string;
 
   constructor(config: SourceConfig) {
     this.config = config;
     this.items = [];
-    this.type = config.type;
+    this.schema = config.schema;
   }
 
   abstract sync(): Promise<void>;
 
   import(text: string) {
     const source: SourceData = this.parse(text);
-    const target: T[] = this.map(source);
-    this.validate(target);
+    const items: any[] = this.map(source);
+    this.validate(items);
   }
 
   get() {
@@ -50,8 +50,8 @@ export default abstract class Source<T> {
     return this.config.mapper ? this.config.mapper(source) : [source];
   }
 
-  validate(target: T[]) {
-    for (const item of target) {
+  validate(items: any[]) {
+    for (const item of items) {
       if (this.config.validator) {
         const result = this.config.validator(item);
         if (result === true) {

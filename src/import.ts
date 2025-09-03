@@ -4,61 +4,52 @@
 // outputs to yaml files for curation and review.
 
 import { glob } from 'glob';
-import SourceApi from './classes/SourceApi.js';
-import SourceFile from './classes/SourceFile.js';
-import SourceSite from './classes/SourceSite.js';
 import { SourceFormat } from './types/Source.js';
-import { Book, BookValidator } from './types/Book.js';
+import { BookValidator } from './types/Example.js';
 import Registry from './classes/Registry.js';
-import Target from './classes/Target.js';
+import { RegistryConfig } from './types/Registry.js';
 
-// Api import
-const api = new SourceApi<Book>({
-  type: 'books',
-  format: SourceFormat.Json,
-  paths: ['https://jsonplaceholder.typicode.com/todos/1'],
-  mapper: source => [
+const config: RegistryConfig = {
+  sources: [
     {
-      id: source.id,
-      title: source.title,
+      schema: 'books',
+      type: 'api',
+      format: SourceFormat.Json,
+      paths: ['https://jsonplaceholder.typicode.com/todos/1'],
+      mapper: source => [
+        {
+          id: source.id,
+          title: source.title,
+        },
+      ],
+      validator: BookValidator,
+    },
+    {
+      schema: 'books',
+      type: 'file',
+      format: SourceFormat.Yaml,
+      paths: await glob('./data/books/*.yaml'),
+      validator: BookValidator,
+    },
+    {
+      schema: 'books',
+      type: 'site',
+      format: SourceFormat.Html,
+      paths: [
+        'https://www.metacritic.com/game/the-legend-of-zelda-ocarina-of-time/',
+      ],
+      mapper: $ => [
+        {
+          id: 2,
+          title: $('h1').text(),
+        },
+      ],
+      validator: BookValidator,
     },
   ],
-  validator: BookValidator,
-});
+  targets: [{ path: './data/${schema}/${id}.yaml' }],
+};
 
-// File import
-const file = new SourceFile<Book>({
-  type: 'books',
-  format: SourceFormat.Yaml,
-  paths: await glob('./data/books/*.yaml'),
-  validator: BookValidator,
-});
-
-// Site import
-const site = new SourceSite<Book>({
-  type: 'books',
-  format: SourceFormat.Html,
-  paths: [
-    'https://www.metacritic.com/game/the-legend-of-zelda-ocarina-of-time/',
-  ],
-  mapper: $ => [
-    {
-      id: 2,
-      title: $('h1').text(),
-    },
-  ],
-  validator: BookValidator,
-});
-
-// add/merge sources into registry
-const registry = new Registry<Book>();
-registry.addSource(api);
-registry.addSource(file);
-registry.addSource(site);
+const registry = new Registry(config);
 await registry.sync();
-console.log('result', registry.get('books'));
-
-// export merged data to yaml files for storage/curation
-const data = new Target<Book>('./data/${type}/${id}.yaml');
-registry.addTarget(data);
 await registry.export();

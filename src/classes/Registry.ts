@@ -1,64 +1,82 @@
-import { RegistryData } from '../types/Registry.js';
+import { RegistryConfig, RegistryData } from '../types/Registry.js';
+import { SourceConfig } from '../types/Source.js';
+import { TargetConfig } from '../types/Target.js';
 import Source from './Source.js';
+import SourceApi from './SourceApi.js';
+import SourceFile from './SourceFile.js';
+import SourceSite from './SourceSite.js';
 import Target from './Target.js';
 
 export default class Registry<T extends { id: number | string }> {
-  private sources: Source<T>[] = [];
-  private targets: Target<T>[] = [];
-  protected records: RegistryData<T>;
+  private config: RegistryConfig;
+  private sources: Source[] = [];
+  private targets: Target[] = [];
+  private records: RegistryData;
 
-  constructor() {
+  constructor(config: RegistryConfig) {
+    this.config = config;
     this.records = {};
+    if (this.config.sources) this.addSources(this.config.sources);
+    if (this.config.targets) this.addTargets(this.config.targets);
   }
 
-  addSource(source: Source<T>) {
-    this.sources.push(source);
+  addSources(sources: SourceConfig[]) {
+    sources.forEach(source => {
+      if (source.type === 'api') {
+        this.sources.push(new SourceApi(source));
+      } else if (source.type === 'site') {
+        this.sources.push(new SourceSite(source));
+      } else {
+        this.sources.push(new SourceFile(source));
+      }
+    });
   }
 
-  addTarget(target: Target<T>) {
-    this.targets.push(target);
+  addTargets(targets: TargetConfig[]) {
+    targets.forEach(target => {
+      this.targets.push(new Target(target.path));
+    });
   }
 
   async sync() {
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
-      this.add(source.type, source.get());
+      this.add(source.schema, source.get());
     }
+    console.log('records', this.records);
   }
 
   async export() {
-    for (const target of this.targets) {
-      await target.export(this.records);
-    }
+    await Promise.all(this.targets.map(target => target.export(this.records)));
   }
 
-  add(type: string, items: T[]) {
-    if (!this.records[type]) {
-      this.records[type] = {};
+  add(schema: string, items: any[]) {
+    if (!this.records[schema]) {
+      this.records[schema] = {};
     }
     for (const item of items) {
-      const existing = this.records[type][item.id];
-      this.records[type][item.id] = { ...existing, ...item };
+      const existing = this.records[schema][item.id];
+      this.records[schema][item.id] = { ...existing, ...item };
     }
   }
 
-  get(type: string, id?: string | number): T | T[] | undefined {
-    if (!this.records[type]) return undefined;
-    return id ? this.records[type][id] : Object.values(this.records[type]);
+  get(schema: string, id?: string | number) {
+    if (!this.records[schema]) return undefined;
+    return id ? this.records[schema][id] : Object.values(this.records[schema]);
   }
 
-  list(): string[] {
+  list() {
     return Object.keys(this.records);
   }
 
-  filter(type: string, predicate: (item: T) => boolean): T[] {
-    return Object.values(this.records[type] ?? {}).filter(predicate);
+  filter(schema: string, predicate: (item: T) => boolean) {
+    return Object.values(this.records[schema] ?? {}).filter(predicate);
   }
 
-  search(type: string, query: string): Partial<T>[] {
-    if (!this.records[type]) return [];
+  search(schema: string, query: string) {
+    if (!this.records[schema]) return [];
     const q = query.trim().toLowerCase();
-    return Object.values(this.records[type]).filter(item => {
+    return Object.values(this.records[schema]).filter(item => {
       const str = JSON.stringify(item).toLowerCase();
       return q.split(/\s+/).every(word => str.includes(word));
     });

@@ -5,26 +5,21 @@
 
 import { glob } from 'glob';
 import Registry from './classes/Registry.js';
-import SourceFile from './classes/SourceFile.js';
 import { SourceFormat } from './types/Source.js';
-import { Book, BookValidator } from './types/Book.js';
-import Target from './classes/Target.js';
+import { RegistryConfig } from './types/Registry.js';
+import { Library } from './types/Example.js';
 
-// File import
-const file = new SourceFile<Book>({
-  type: 'books',
-  format: SourceFormat.Yaml,
-  paths: await glob('./data/books/*.yaml'),
-  validator: BookValidator,
-});
+const config: RegistryConfig = {
+  sources: [
+    {
+      schema: Library.Books,
+      format: SourceFormat.Yaml,
+      paths: await glob('./data/books/*.yaml'),
+    },
+  ],
+  targets: [{ path: './out/${schema}/${id}.json' }],
+};
 
-// add/merge sources into registry
-const registry = new Registry<Book>();
-registry.addSource(file);
+const registry = new Registry(config);
 await registry.sync();
-console.log('result', registry.get('books'));
-
-// export to static json API for deployment to GitHub pages
-const out = new Target<Book>('./out/${type}/${id}.json');
-registry.addTarget(out);
 await registry.export();

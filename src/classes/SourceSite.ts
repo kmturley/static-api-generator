@@ -2,7 +2,7 @@ import { CheerioCrawler } from 'crawlee';
 import { SourceConfig } from '../types/Source.js';
 import Source from './Source.js';
 
-export default class SourceSite<T> extends Source<T> {
+export default class SourceSite extends Source {
   constructor(config: SourceConfig) {
     super(config);
   }
@@ -11,14 +11,14 @@ export default class SourceSite<T> extends Source<T> {
     if (!this.config.mapper)
       throw new Error('Mapper function is required for SourceSite');
     const mapper = this.config.mapper;
-    const target: T[] = [];
+    const items: any[] = [];
     const crawler = new CheerioCrawler({
       async requestHandler({ $ }) {
-        target.push(...mapper($));
+        items.push(...mapper($));
       },
       maxRequestsPerCrawl: 1,
     });
     await crawler.run(this.getPaths());
-    this.validate(target);
+    this.validate(items);
   }
 }

@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+export enum Library {
+  Authors = 'authors',
+  Books = 'books',
+}
+
 export interface Book {
   id: number;
   title: string;
@@ -14,7 +19,4 @@ export const BookSchema = z.object({
   year: z.number().optional(),
 });
 
-export const BookValidator = (item: Book) => {
-  const result = BookSchema.safeParse(item);
-  return result.success ? true : result.error;
-};
+export const BookValidator = (item: Book) => BookSchema.safeParse(item).success;
