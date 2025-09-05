@@ -19,6 +19,6 @@ export default class SourceSite extends Source {
       maxRequestsPerCrawl: 1,
     });
     await crawler.run(this.getPaths());
-    this.validate(items);
+    this.items = items;
   }
 }

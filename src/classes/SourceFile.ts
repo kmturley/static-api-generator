@@ -9,6 +9,7 @@ export default class SourceFile extends Source {
 
   async sync() {
     for (const path of this.getPaths()) {
+      console.log(`📂 ${path}`);
       try {
         const text: string = await readFile(path, 'utf-8');
         this.import(text);

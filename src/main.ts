@@ -4,22 +4,36 @@
 // ready to deploy a static JSON API on GitHub pages.
 
 import { glob } from 'glob';
+import Collection from './classes/Collection.js';
 import Registry from './classes/Registry.js';
 import { SourceFormat } from './types/Source.js';
-import { RegistryConfig } from './types/Registry.js';
-import { Library } from './types/Example.js';
+import { BookValidator, Library } from './types/Example.js';
+import SourceFile from './classes/SourceFile.js';
+import TargetFile from './classes/TargetFile.js';
+import { TargetFormat } from './types/Target.js';
 
-const config: RegistryConfig = {
-  sources: [
-    {
-      schema: Library.Books,
-      format: SourceFormat.Yaml,
-      paths: await glob('./data/books/*.yaml'),
-    },
-  ],
-  targets: [{ path: './out/${schema}/${id}.json' }],
-};
+const registry = new Registry({
+  name: 'My library',
+  url: 'https://library.com',
+  version: '1.0.0',
+});
 
-const registry = new Registry(config);
+const filesIn = new SourceFile({
+  format: SourceFormat.Yaml,
+  paths: await glob('./data/books/*.yaml'),
+});
+
+const filesOut = new TargetFile({
+  format: TargetFormat.Json,
+  paths: ['./out/${collection}/${id}.json'],
+});
+
+const books = new Collection(Library.Books, {
+  sources: [filesIn],
+  targets: [filesOut],
+  validator: BookValidator,
+});
+
+registry.addCollection(books);
 await registry.sync();
 await registry.export();
