@@ -20,7 +20,7 @@ const registry = new Registry({
   version: '1.0.0',
 });
 
-const requests = new SourceApi({
+const apis = new SourceApi({
   format: SourceFormat.Json,
   paths: ['https://jsonplaceholder.typicode.com/todos/1'],
   mapper: source => [
@@ -55,7 +55,7 @@ const target = new TargetFile({
 });
 
 const books = new Collection(Library.Books, {
-  sources: [requests, files, pages],
+  sources: [apis, files, pages],
   targets: [target],
   validator: BookValidator,
 });

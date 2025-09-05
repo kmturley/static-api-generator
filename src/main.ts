@@ -25,7 +25,7 @@ const filesIn = new SourceFile({
 
 const filesOut = new TargetFile({
   format: TargetFormat.Json,
-  paths: ['./out/${collection}/${id}.json'],
+  paths: ['./out/${collection}/${id}.json', './out/${collection}/index.json'],
 });
 
 const books = new Collection(Library.Books, {

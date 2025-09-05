@@ -73,7 +73,7 @@ export default class Collection {
   toJSON(): CollectionInterface {
     const data: any = {};
     for (const [id, pkg] of this.packages.entries()) {
-      data[id] = pkg.toJSON();
+      data[id] = JSON.stringify(pkg, null, 2);
     }
     return data;
   }
