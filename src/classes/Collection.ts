@@ -4,13 +4,13 @@ import {
   CollectionValidator,
 } from '../types/Collection.js';
 import Source from './Source.js';
-import Target from './Target.js';
+import Target from './TargetFile.js';
 
 export default class Collection {
   private config: CollectionConfig;
   private packages: Map<string, any>;
   private sources: Source[] = [];
-  private target: Target;
+  private targets: Target[] = [];
   private validator?: CollectionValidator;
   type: string;
 
@@ -18,7 +18,7 @@ export default class Collection {
     this.config = config;
     this.packages = new Map();
     this.sources = this.config.sources;
-    this.target = new Target();
+    this.targets = this.config.targets;
     this.validator = this.config.validator;
     this.type = type;
   }
@@ -53,8 +53,10 @@ export default class Collection {
     );
   }
 
-  async export(pathTemplate: string) {
-    await this.target.export(this.type, pathTemplate, this.packages);
+  async export() {
+    for (const target of this.targets) {
+      await target.export(this.type, this.packages);
+    }
   }
 
   async sync() {

@@ -22,9 +22,9 @@ export default class Registry {
     return this.collections.get(type);
   }
 
-  async export(pathTemplate: string) {
+  async export() {
     for (const [, collection] of this.collections) {
-      await collection.export(pathTemplate);
+      await collection.export();
     }
   }
 

@@ -11,6 +11,8 @@ import Collection from './classes/Collection.js';
 import SourceFile from './classes/SourceFile.js';
 import SourceApi from './classes/SourceApi.js';
 import SourceSite from './classes/SourceSite.js';
+import TargetFile from './classes/TargetFile.js';
+import { TargetFormat } from './types/Target.js';
 
 const registry = new Registry({
   name: 'My library',
@@ -47,11 +49,17 @@ const pages = new SourceSite({
   ],
 });
 
+const target = new TargetFile({
+  format: TargetFormat.Yaml,
+  paths: ['./data/${collection}/${id}.yaml'],
+});
+
 const books = new Collection(Library.Books, {
   sources: [requests, files, pages],
+  targets: [target],
   validator: BookValidator,
 });
 
 registry.addCollection(books);
 await registry.sync();
-await registry.export('./data/${collection}/${id}.yaml');
+await registry.export();
