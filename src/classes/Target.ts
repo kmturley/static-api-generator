@@ -3,16 +3,9 @@ import path from 'path';
 import { js2xml } from 'xml-js';
 import { stringify } from 'csv';
 import yaml from 'js-yaml';
-
 import { SourceFormat } from '../types/Source.js';
-import { RegistryData } from '../types/Registry.js';
 
 export default class Target {
-  pathTemplate: string = '';
-  constructor(pathTemplate: string) {
-    this.pathTemplate = pathTemplate;
-  }
-
   async convert(obj: any, format: SourceFormat): Promise<string> {
     switch (format) {
       case SourceFormat.Csv:
@@ -33,23 +26,19 @@ export default class Target {
     }
   }
 
-  async export(records: RegistryData) {
-    for (const [schema, collection] of Object.entries(records)) {
-      for (const [id, record] of Object.entries(collection)) {
-        const sanitizedSchema = path.basename(schema);
-        const sanitizedId = path.basename(String(id));
-        const filePath = this.pathTemplate
-          .replace(/\$\{schema\}/g, sanitizedSchema)
-          .replace(/\$\{id\}/g, sanitizedId);
-        const ext = path.extname(filePath).slice(1).toLowerCase();
-        const format: SourceFormat =
-          (Object.values(SourceFormat).find(f => f === ext) as SourceFormat) ??
-          SourceFormat.Json;
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        const content = await this.convert(record, format);
-        await fs.writeFile(filePath, content, 'utf-8');
-        console.log(`+ ${filePath}`);
-      }
+  async export(type: string, pathTemplate: string, packages: Map<string, any>) {
+    for (const [id, pkg] of packages.entries()) {
+      const filePath = pathTemplate
+        .replace(/\$\{collection\}/g, type)
+        .replace(/\$\{id\}/g, id);
+      const ext = path.extname(filePath).slice(1).toLowerCase();
+      const format: SourceFormat =
+        (Object.values(SourceFormat).find(f => f === ext) as SourceFormat) ??
+        SourceFormat.Json;
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      const content = await this.convert(pkg, format);
+      await fs.writeFile(filePath, content, 'utf-8');
+      console.log(`+ ${filePath}`);
     }
   }
 }

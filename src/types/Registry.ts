@@ -1,13 +1,14 @@
-import { SourceConfig } from './Source';
-import { TargetConfig } from './Target';
+import { CollectionInterface } from './Collection';
 
 export interface RegistryConfig {
-  sources: SourceConfig[];
-  targets: TargetConfig[];
+  name: string;
+  url: string;
+  version: string;
 }
 
-export type RegistryCollection = Record<string, any>;
-
-export interface RegistryData {
-  [schema: string]: RegistryCollection;
+export interface RegistryInterface {
+  name: string;
+  url: string;
+  version: string;
+  [type: string]: CollectionInterface | string;
 }

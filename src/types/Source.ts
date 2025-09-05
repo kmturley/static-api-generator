@@ -1,13 +1,8 @@
 export interface SourceConfig {
-  schema: string;
+  format: SourceFormat;
   paths: string[];
-  type?: string;
-  format?: SourceFormat;
-  mapper?: (source: SourceData) => any[];
-  validator?: (item: any) => any;
+  mapper?: SourceMapper;
 }
-
-export type SourceData = any;
 
 export enum SourceFormat {
   Csv = 'csv',
@@ -16,3 +11,5 @@ export enum SourceFormat {
   Yaml = 'yaml',
   Xml = 'xml',
 }
+
+export type SourceMapper = (input: any) => any[];
