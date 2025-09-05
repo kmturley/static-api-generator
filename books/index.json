@@ -1,0 +1,14 @@
+{
+  "1": {
+    "id": 1,
+    "title": "Adventures in Coding",
+    "author": "Joe Bloggs",
+    "year": 2025
+  },
+  "2": {
+    "id": 2,
+    "title": "The Legend of Zelda: Ocarina of Time",
+    "author": "Sandy Hills",
+    "year": 1995
+  }
+}
