@@ -43,7 +43,7 @@ await registry.export([
   }),
   new TargetFile({
     format: TargetFormat.Json,
-    pattern: './out/${collection}/${package}.json',
+    pattern: './out/${collection}/${package}/index.json',
     type: TargetType.Package,
   }),
 ]);
