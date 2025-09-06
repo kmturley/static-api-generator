@@ -1,6 +1,7 @@
 export interface TargetConfig {
   format: TargetFormat;
-  paths: string[];
+  pattern: string;
+  type: TargetType;
 }
 
 export enum TargetFormat {
@@ -9,4 +10,10 @@ export enum TargetFormat {
   Html = 'html',
   Yaml = 'yaml',
   Xml = 'xml',
+}
+
+export enum TargetType {
+  Collection = 'collection',
+  Package = 'package',
+  Registry = 'registry',
 }

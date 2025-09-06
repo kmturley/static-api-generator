@@ -10,7 +10,7 @@ import { SourceFormat } from './types/Source.js';
 import { BookValidator, Library } from './types/Example.js';
 import SourceFile from './classes/SourceFile.js';
 import TargetFile from './classes/TargetFile.js';
-import { TargetFormat } from './types/Target.js';
+import { TargetFormat, TargetType } from './types/Target.js';
 
 const registry = new Registry({
   name: 'My library',
@@ -23,20 +23,27 @@ const filesIn = new SourceFile({
   paths: await glob('./data/books/*.yaml'),
 });
 
-const filesOut = new TargetFile({
-  format: TargetFormat.Json,
-  paths: ['./out/${collection}/${id}.json', './out/${collection}/index.json'],
-});
-
 const books = new Collection(Library.Books, {
   sources: [filesIn],
-  targets: [filesOut],
   validator: BookValidator,
 });
 
 registry.addCollection(books);
 await registry.sync();
-await registry.export({
-  format: TargetFormat.Json,
-  paths: ['./out/index.json'],
-});
+await registry.export([
+  new TargetFile({
+    format: TargetFormat.Json,
+    pattern: './out/index.json',
+    type: TargetType.Registry,
+  }),
+  new TargetFile({
+    format: TargetFormat.Json,
+    pattern: './out/${collection}/index.json',
+    type: TargetType.Collection,
+  }),
+  new TargetFile({
+    format: TargetFormat.Json,
+    pattern: './out/${collection}/${package}.json',
+    type: TargetType.Package,
+  }),
+]);

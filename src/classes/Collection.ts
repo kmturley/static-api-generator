@@ -3,15 +3,15 @@ import {
   CollectionInterface,
   CollectionValidator,
 } from '../types/Collection.js';
+import { TargetType } from '../types/Target.js';
 import Package from './Package.js';
 import Source from './Source.js';
-import Target from './TargetFile.js';
+import TargetFile from './TargetFile.js';
 
 export default class Collection {
   private config: CollectionConfig;
   private packages: Map<string, Package>;
   private sources: Source[] = [];
-  private targets: Target[] = [];
   private validator?: CollectionValidator;
   type: string;
 
@@ -19,7 +19,6 @@ export default class Collection {
     this.config = config;
     this.packages = new Map();
     this.sources = this.config.sources;
-    this.targets = this.config.targets;
     this.validator = this.config.validator;
     this.type = type;
   }
@@ -59,9 +58,15 @@ export default class Collection {
     );
   }
 
-  async export() {
-    for (const target of this.targets) {
-      await target.export(this.type, this.packages);
+  async export(targets: TargetFile[], vars: any) {
+    vars = { ...vars, collection: this.type };
+    for (const target of targets) {
+      if (target.type === TargetType.Collection) {
+        await target.export(this, vars);
+      }
+    }
+    for (const [, pkg] of this.packages) {
+      await pkg.export(targets, vars);
     }
   }
 
@@ -70,18 +75,16 @@ export default class Collection {
     for (const source of this.sources) {
       const items: any[] = source.get();
       for (const item of items) {
-        console.log('item', item);
         const pkg = new Package(item.id, item);
-        console.log('pkg', pkg);
         this.addPackage(pkg);
       }
     }
-    console.log('packages', this.packages);
+    console.log('sync', this.packages);
   }
 
   toJSON(): CollectionInterface {
     const data: any = {};
-    for (const [id, pkg] of this.packages.entries()) {
+    for (const [id, pkg] of this.packages) {
       data[id] = pkg.toJSON();
     }
     return data;

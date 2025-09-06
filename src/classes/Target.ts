@@ -1,24 +1,32 @@
 import { js2xml } from 'xml-js';
 import { stringify } from 'csv';
 import yaml from 'js-yaml';
-import { TargetConfig, TargetFormat } from '../types/Target.js';
-import Package from './Package.js';
+import { TargetConfig, TargetFormat, TargetType } from '../types/Target.js';
 
 export default abstract class Target {
-  protected config: TargetConfig;
+  format: TargetFormat;
+  pattern: string;
+  type: TargetType;
 
   constructor(config: TargetConfig) {
-    this.config = config;
+    this.format = config.format;
+    this.pattern = config.pattern;
+    this.type = config.type;
   }
 
-  abstract export(type: string, packages: Map<string, Package>): Promise<void>;
+  abstract export(
+    data: any,
+    patternVars?: Record<string, string | number>,
+  ): Promise<void>;
 
-  getPaths() {
-    return this.config.paths;
+  replace(pattern: string, vars: Record<string, string | number>): string {
+    return pattern.replace(/\$\{([^}]+)\}/g, (_, key) => {
+      return vars[key] !== undefined ? String(vars[key]) : key;
+    });
   }
 
   async convert(obj: any): Promise<string> {
-    switch (this.config.format) {
+    switch (this.format) {
       case TargetFormat.Csv:
         return new Promise<string>((resolve, reject) => {
           stringify([obj], (err, output) => {
@@ -33,7 +41,7 @@ export default abstract class Target {
       case TargetFormat.Xml:
         return js2xml({ root: obj });
       default:
-        return JSON.stringify(obj, null, 2);
+        throw new Error(`Unsupported format: ${this.format}`);
     }
   }
 }
