@@ -24,13 +24,14 @@ export default class Collection {
   }
 
   addPackage(pkg: Package) {
+    console.log('addPackage', pkg);
     if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
-    const existing = this.packages.get(pkg.id);
+    const existing = this.packages.get(pkg.slug);
     if (existing) {
       existing.merge(pkg.get());
     } else {
-      this.packages.set(pkg.id, pkg);
+      this.packages.set(pkg.slug, pkg);
     }
   }
 
@@ -59,14 +60,14 @@ export default class Collection {
   }
 
   async export(targets: TargetFile[], vars: any) {
-    vars = { ...vars, collection: this.type };
+    const nextVars = { ...vars, collection: this.type };
     for (const target of targets) {
       if (target.type === TargetType.Collection) {
-        await target.export(this, vars);
+        await target.export(this, nextVars);
       }
     }
     for (const [, pkg] of this.packages) {
-      await pkg.export(targets, vars);
+      await pkg.export(targets, nextVars);
     }
   }
 
@@ -75,11 +76,10 @@ export default class Collection {
     for (const source of this.sources) {
       const items: any[] = source.get();
       for (const item of items) {
-        const pkg = new Package(item.id, item);
+        const pkg = new Package(item.slug, item);
         this.addPackage(pkg);
       }
     }
-    console.log('sync', this.packages);
   }
 
   toJSON(): CollectionInterface {

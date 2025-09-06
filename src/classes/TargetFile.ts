@@ -8,10 +8,8 @@ export default class TargetFile extends Target {
     super(config);
   }
 
-  async export(data: any, patternVars?: Record<string, string | number>) {
-    const outPath = patternVars
-      ? this.replace(this.pattern, patternVars)
-      : this.pattern;
+  async export(data: any, patternVars: Record<string, string | number> = {}) {
+    const outPath = this.replace(this.pattern, patternVars);
     const dir = path.dirname(outPath);
     const content = await this.convert(data.toJSON());
     await fs.mkdir(dir, { recursive: true });

@@ -25,14 +25,14 @@ export default class Registry {
   }
 
   async export(targets: TargetFile[]) {
-    const vars: any = { registry: this.version };
+    const nextVars = { registry: this.version };
     for (const target of targets) {
       if (target.type === TargetType.Registry) {
-        await target.export(this, vars);
+        await target.export(this, nextVars);
       }
     }
     for (const [, collection] of this.collections) {
-      await collection.export(targets, vars);
+      await collection.export(targets, nextVars);
     }
   }
 

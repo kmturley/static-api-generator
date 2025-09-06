@@ -4,6 +4,7 @@
 // outputs to yaml files for curation and review.
 
 import { glob } from 'glob';
+import slugify from 'slugify';
 import { SourceFormat } from './types/Source.js';
 import { BookValidator, Library } from './types/Example.js';
 import Registry from './classes/Registry.js';
@@ -25,7 +26,7 @@ const apis = new SourceApi({
   paths: ['https://jsonplaceholder.typicode.com/todos/1'],
   mapper: source => [
     {
-      id: source.id,
+      slug: slugify(source.title, { lower: true, strict: true }),
       title: source.title,
     },
   ],
@@ -43,7 +44,7 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      id: 2,
+      slug: slugify($('h1').text(), { lower: true, strict: true }),
       title: $('h1').text(),
     },
   ],

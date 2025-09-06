@@ -6,14 +6,14 @@ export enum Library {
 }
 
 export interface Book {
-  id: string | number;
+  slug: string;
   title: string;
   author?: string;
   year?: number;
 }
 
 export const BookSchema = z.object({
-  id: z.string().or(z.number()),
+  slug: z.string().max(255),
   title: z.string().max(255),
   author: z.string().max(255).optional(),
   year: z.number().optional(),
