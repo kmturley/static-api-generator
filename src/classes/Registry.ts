@@ -1,5 +1,7 @@
 import { RegistryConfig, RegistryInterface } from '../types/Registry.js';
+import { TargetConfig } from '../types/Target.js';
 import Collection from './Collection.js';
+import TargetFile from './TargetFile.js';
 
 export default class Registry {
   name: string;
@@ -22,9 +24,13 @@ export default class Registry {
     return this.collections.get(type);
   }
 
-  async export() {
+  async export(config?: TargetConfig) {
     for (const [, collection] of this.collections) {
       await collection.export();
+    }
+    if (config) {
+      const target = new TargetFile(config);
+      target.exportNew(config.paths[0], this.toJSON());
     }
   }
 

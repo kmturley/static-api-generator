@@ -3,12 +3,13 @@ import {
   CollectionInterface,
   CollectionValidator,
 } from '../types/Collection.js';
+import Package from './Package.js';
 import Source from './Source.js';
 import Target from './TargetFile.js';
 
 export default class Collection {
   private config: CollectionConfig;
-  private packages: Map<string, any>;
+  private packages: Map<string, Package>;
   private sources: Source[] = [];
   private targets: Target[] = [];
   private validator?: CollectionValidator;
@@ -23,10 +24,15 @@ export default class Collection {
     this.type = type;
   }
 
-  addPackage(pkg: any) {
-    if (this.validator && !this.validator(pkg))
+  addPackage(pkg: Package) {
+    if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
-    this.packages.set(pkg.id, { ...this.packages.get(pkg.id), ...pkg });
+    const existing = this.packages.get(pkg.id);
+    if (existing) {
+      existing.merge(pkg.get());
+    } else {
+      this.packages.set(pkg.id, pkg);
+    }
   }
 
   getPackage(id: string) {
@@ -62,8 +68,11 @@ export default class Collection {
   async sync() {
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
-      const packages = source.get();
-      for (const pkg of packages) {
+      const items: any[] = source.get();
+      for (const item of items) {
+        console.log('item', item);
+        const pkg = new Package(item.id, item);
+        console.log('pkg', pkg);
         this.addPackage(pkg);
       }
     }
@@ -73,7 +82,7 @@ export default class Collection {
   toJSON(): CollectionInterface {
     const data: any = {};
     for (const [id, pkg] of this.packages.entries()) {
-      data[id] = JSON.stringify(pkg, null, 2);
+      data[id] = pkg.toJSON();
     }
     return data;
   }

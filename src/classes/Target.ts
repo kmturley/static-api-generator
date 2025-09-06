@@ -2,6 +2,7 @@ import { js2xml } from 'xml-js';
 import { stringify } from 'csv';
 import yaml from 'js-yaml';
 import { TargetConfig, TargetFormat } from '../types/Target.js';
+import Package from './Package.js';
 
 export default abstract class Target {
   protected config: TargetConfig;
@@ -10,7 +11,7 @@ export default abstract class Target {
     this.config = config;
   }
 
-  abstract export(type: string, packages: Map<string, any>): Promise<void>;
+  abstract export(type: string, packages: Map<string, Package>): Promise<void>;
 
   getPaths() {
     return this.config.paths;

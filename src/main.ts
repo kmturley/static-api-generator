@@ -36,4 +36,7 @@ const books = new Collection(Library.Books, {
 
 registry.addCollection(books);
 await registry.sync();
-await registry.export();
+await registry.export({
+  format: TargetFormat.Json,
+  paths: ['./out/index.json'],
+});
