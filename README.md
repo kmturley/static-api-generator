@@ -24,6 +24,7 @@ Update [./src/main.ts](src/main.ts) to generate the static API files from your s
 
 - Registry: https://kmturley.github.io/static-api-generator
 - Collection: https://kmturley.github.io/static-api-generator/books
+- Organization: https://kmturley.github.io/static-api-generator/books/joe-bloggs
 - Package: https://kmturley.github.io/static-api-generator/books/joe-bloggs/adventures-in-coding
 
 ## Installation

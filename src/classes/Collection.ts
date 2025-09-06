@@ -4,20 +4,21 @@ import {
   CollectionValidator,
 } from '../types/Collection.js';
 import { TargetType } from '../types/Target.js';
+import Organization from './Organization.js';
 import Package from './Package.js';
 import Source from './Source.js';
 import TargetFile from './TargetFile.js';
 
 export default class Collection {
   private config: CollectionConfig;
-  private packages: Map<string, Package>;
+  private orgs: Map<string, Organization>;
   private sources: Source[] = [];
   private validator?: CollectionValidator;
   type: string;
 
   constructor(type: string, config: CollectionConfig) {
     this.config = config;
-    this.packages = new Map();
+    this.orgs = new Map();
     this.sources = this.config.sources;
     this.validator = this.config.validator;
     this.type = type;
@@ -27,29 +28,41 @@ export default class Collection {
     console.log('addPackage', pkg);
     if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
-    const existing = this.packages.get(pkg.slug);
-    if (existing) {
-      existing.merge(pkg.get());
-    } else {
-      this.packages.set(pkg.slug, pkg);
+
+    const orgName = pkg.get().org;
+
+    if (!this.orgs.has(orgName)) {
+      this.orgs.set(orgName, new Organization(orgName));
     }
+
+    this.orgs.get(orgName)!.addPackage(pkg);
   }
 
-  getPackage(id: string) {
-    return this.packages.get(id);
+  getPackage(orgName: string, slug: string) {
+    const org = this.orgs.get(orgName);
+    return org?.getPackage(slug);
   }
 
   listPackages() {
-    return Array.from(this.packages.values());
+    const packages: Package[] = [];
+    for (const org of this.orgs.values()) {
+      packages.push(...org.listPackages());
+    }
+    return packages;
   }
 
-  removePackage(id: string) {
-    if (!this.packages.has(id)) return;
-    this.packages.delete(id);
+  removePackage(orgName: string, slug: string) {
+    const org = this.orgs.get(orgName);
+    if (org) {
+      org.packages.delete(slug);
+      if (org.packages.size === 0) {
+        this.orgs.delete(orgName);
+      }
+    }
   }
 
   reset() {
-    this.packages.clear();
+    this.orgs.clear();
   }
 
   search(query: string) {
@@ -61,13 +74,15 @@ export default class Collection {
 
   async export(targets: TargetFile[], vars: any) {
     const nextVars = { ...vars, collection: this.type };
+
     for (const target of targets) {
       if (target.type === TargetType.Collection) {
         await target.export(this, nextVars);
       }
     }
-    for (const [, pkg] of this.packages) {
-      await pkg.export(targets, nextVars);
+
+    for (const [, org] of this.orgs) {
+      await org.export(targets, nextVars);
     }
   }
 
@@ -84,8 +99,8 @@ export default class Collection {
 
   toJSON(): CollectionInterface {
     const data: any = {};
-    for (const [id, pkg] of this.packages) {
-      data[id] = pkg.toJSON();
+    for (const [name, org] of this.orgs) {
+      data[name] = org.toJSON();
     }
     return data;
   }

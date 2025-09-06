@@ -15,12 +15,8 @@ import SourceSite from './classes/SourceSite.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
 
-function toSlug(items: string[]) {
-  return items
-    .map(item => {
-      return slugify(item, { lower: true, strict: true });
-    })
-    .join('/');
+function toSlug(item: string) {
+  return slugify(item, { lower: true, strict: true });
 }
 
 const registry = new Registry({
@@ -34,7 +30,8 @@ const apis = new SourceApi({
   paths: ['https://jsonplaceholder.typicode.com/comments/1'],
   mapper: source => [
     {
-      slug: toSlug([source.email, source.name]),
+      org: toSlug(source.email),
+      slug: toSlug(source.name),
       title: source.name,
     },
   ],
@@ -52,7 +49,8 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      slug: toSlug([$('.c-gameDetails_Developer a').text(), $('h1').text()]),
+      org: toSlug($('.c-gameDetails_Developer a').text()),
+      slug: toSlug($('h1').text()),
       title: $('h1').text(),
     },
   ],
@@ -68,7 +66,7 @@ await registry.sync();
 await registry.export([
   new TargetFile({
     format: TargetFormat.Yaml,
-    pattern: './data/${collection}/${package}.yaml',
+    pattern: './data/${collection}/${org}/${package}.yaml',
     type: TargetType.Package,
   }),
 ]);

@@ -14,6 +14,7 @@ export enum TargetFormat {
 
 export enum TargetType {
   Collection = 'collection',
+  Org = 'org',
   Package = 'package',
   Registry = 'registry',
 }
