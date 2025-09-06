@@ -3,23 +3,32 @@
   "url": "https://library.com",
   "version": "1.0.0",
   "books": {
-    "the-legend-of-zelda-ocarina-of-time": {
-      "slug": "the-legend-of-zelda-ocarina-of-time",
-      "title": "The Legend of Zelda: Ocarina of Time",
-      "author": "Sandy Hills",
-      "year": 1995
+    "nintendo": {
+      "the-legend-of-zelda-ocarina-of-time": {
+        "org": "nintendo",
+        "slug": "the-legend-of-zelda-ocarina-of-time",
+        "title": "The Legend of Zelda: Ocarina of Time",
+        "author": "Nintendo",
+        "year": 1995
+      }
     },
-    "delectus-aut-autem": {
-      "slug": "delectus-aut-autem",
-      "title": "delectus aut autem",
-      "author": "Tina Wallis",
-      "year": 2017
+    "joe-bloggs": {
+      "adventures-in-coding": {
+        "org": "joe-bloggs",
+        "slug": "adventures-in-coding",
+        "title": "Adventures in Coding",
+        "author": "Joe Bloggs",
+        "year": 2025
+      }
     },
-    "adventures-in-coding": {
-      "slug": "adventures-in-coding",
-      "title": "Adventures in Coding",
-      "author": "Joe Bloggs",
-      "year": 2025
+    "eliseogardnerbiz": {
+      "id-labore-ex-et-quam-laborum": {
+        "org": "eliseogardnerbiz",
+        "slug": "id-labore-ex-et-quam-laborum",
+        "title": "id labore ex et quam laborum",
+        "author": "Eliseo@gardner.biz",
+        "year": 2017
+      }
     }
   }
 }
