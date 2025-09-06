@@ -1,14 +1,20 @@
 {
-  "1": {
-    "id": 1,
-    "title": "Adventures in Coding",
-    "author": "Joe Bloggs",
-    "year": 2025
-  },
-  "2": {
-    "id": 2,
+  "the-legend-of-zelda-ocarina-of-time": {
+    "slug": "the-legend-of-zelda-ocarina-of-time",
     "title": "The Legend of Zelda: Ocarina of Time",
     "author": "Sandy Hills",
     "year": 1995
+  },
+  "delectus-aut-autem": {
+    "slug": "delectus-aut-autem",
+    "title": "delectus aut autem",
+    "author": "Tina Wallis",
+    "year": 2017
+  },
+  "adventures-in-coding": {
+    "slug": "adventures-in-coding",
+    "title": "Adventures in Coding",
+    "author": "Joe Bloggs",
+    "year": 2025
   }
 }
