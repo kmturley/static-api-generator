@@ -20,7 +20,7 @@ const registry = new Registry({
 
 const filesIn = new SourceFile({
   format: SourceFormat.Yaml,
-  paths: await glob('./data/books/*.yaml'),
+  paths: await glob('./data/books/**/*.yaml'),
 });
 
 const books = new Collection(Library.Books, {

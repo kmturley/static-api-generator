@@ -15,6 +15,14 @@ import SourceSite from './classes/SourceSite.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
 
+function toSlug(items: string[]) {
+  return items
+    .map(item => {
+      return slugify(item, { lower: true, strict: true });
+    })
+    .join('/');
+}
+
 const registry = new Registry({
   name: 'My library',
   url: 'https://library.com',
@@ -23,18 +31,18 @@ const registry = new Registry({
 
 const apis = new SourceApi({
   format: SourceFormat.Json,
-  paths: ['https://jsonplaceholder.typicode.com/todos/1'],
+  paths: ['https://jsonplaceholder.typicode.com/comments/1'],
   mapper: source => [
     {
-      slug: slugify(source.title, { lower: true, strict: true }),
-      title: source.title,
+      slug: toSlug([source.email, source.name]),
+      title: source.name,
     },
   ],
 });
 
 const files = new SourceFile({
   format: SourceFormat.Yaml,
-  paths: await glob('./data/books/*.yaml'),
+  paths: await glob('./data/books/**/*.yaml'),
 });
 
 const pages = new SourceSite({
@@ -44,7 +52,7 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      slug: slugify($('h1').text(), { lower: true, strict: true }),
+      slug: toSlug([$('.c-gameDetails_Developer a').text(), $('h1').text()]),
       title: $('h1').text(),
     },
   ],
