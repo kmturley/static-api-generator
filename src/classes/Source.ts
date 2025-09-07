@@ -1,7 +1,7 @@
 import { parse } from 'csv';
 import { xml2js } from 'xml-js';
 import yaml from 'js-yaml';
-import { SourceConfig, SourceFormat } from '../types/Source.js';
+import { SourceConfig, SourceFormat, SourceMapped } from '../types/Source.js';
 
 export default abstract class Source {
   protected config: SourceConfig;
@@ -42,7 +42,7 @@ export default abstract class Source {
     }
   }
 
-  map(source: any) {
+  map(source: any): SourceMapped[] {
     if (this.config.mapper) {
       return this.config.mapper(source);
     }

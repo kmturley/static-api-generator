@@ -95,10 +95,8 @@ export default class Collection {
   }
 
   toJSON(): CollectionInterface {
-    const data: any = {};
-    for (const [name, org] of this.orgs) {
-      data[name] = org.toJSON();
-    }
-    return data;
+    return Object.fromEntries(
+      Array.from(this.orgs, ([name, org]) => [name, org.toJSON()]),
+    );
   }
 }

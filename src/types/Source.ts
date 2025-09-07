@@ -12,4 +12,10 @@ export enum SourceFormat {
   Xml = 'xml',
 }
 
-export type SourceMapper = (input: any) => any[];
+export interface SourceMapped {
+  org: string;
+  slug: string;
+  data: unknown;
+}
+
+export type SourceMapper = (input: any) => SourceMapped[];

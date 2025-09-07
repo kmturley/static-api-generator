@@ -1,3 +1,4 @@
+import { OrganizationInterface } from '../types/Organization.js';
 import { TargetType } from '../types/Target.js';
 import Package from './Package.js';
 import TargetFile from './TargetFile.js';
@@ -42,11 +43,9 @@ export default class Organization {
     }
   }
 
-  toJSON() {
-    const data: any = {};
-    for (const [slug, pkg] of this.packages) {
-      data[slug] = pkg.toJSON();
-    }
-    return data;
+  toJSON(): OrganizationInterface {
+    return Object.fromEntries(
+      Array.from(this.packages, ([slug, pkg]) => [slug, pkg.toJSON()]),
+    );
   }
 }

@@ -49,14 +49,16 @@ export default class Registry {
   }
 
   toJSON(): RegistryInterface {
-    const data: RegistryInterface = {
+    return {
       name: this.name,
       url: this.url,
       version: this.version,
+      ...Object.fromEntries(
+        Array.from(this.collections, ([type, collection]) => [
+          type,
+          collection.toJSON(),
+        ]),
+      ),
     };
-    for (const [type, collection] of this.collections) {
-      data[type] = collection.toJSON();
-    }
-    return data;
   }
 }

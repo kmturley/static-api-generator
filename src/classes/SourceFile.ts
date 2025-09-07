@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import { SourceConfig } from '../types/Source.js';
+import { SourceConfig, SourceMapped } from '../types/Source.js';
 import Source from './Source.js';
 
 export default class SourceFile extends Source {
@@ -20,7 +20,7 @@ export default class SourceFile extends Source {
     }
   }
 
-  mapFile(source: any, path: string) {
+  mapFile(source: any, path: string): SourceMapped[] {
     const parts = path.split(/[/.]+/).slice(0, -1);
     return [
       {

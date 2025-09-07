@@ -1,3 +1,4 @@
+import { PackageInterface } from '../types/Package.js';
 import { TargetType } from '../types/Target.js';
 import TargetFile from './TargetFile.js';
 
@@ -29,7 +30,7 @@ export default class Package {
     }
   }
 
-  toJSON() {
+  toJSON(): PackageInterface {
     return this.data;
   }
 }
