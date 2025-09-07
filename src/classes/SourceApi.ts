@@ -8,6 +8,7 @@ export default class SourceApi extends Source {
 
   async sync() {
     for (const path of this.getPaths()) {
+      console.log(`🔗 ${path}`);
       const response: Response = await fetch(path);
       const text: string = await response.text();
       this.import(text);

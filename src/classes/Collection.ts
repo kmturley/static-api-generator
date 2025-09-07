@@ -25,7 +25,6 @@ export default class Collection {
   }
 
   addPackage(pkg: Package) {
-    console.log('addPackage', pkg);
     if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
 
@@ -87,6 +86,7 @@ export default class Collection {
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
       const items: any[] = source.get();
+      console.log(source.constructor.name);
       for (const item of items) {
         const pkg = new Package(item.org, item.slug, item.data);
         this.addPackage(pkg);

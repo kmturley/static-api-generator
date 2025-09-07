@@ -25,6 +25,7 @@ export default class Registry {
   }
 
   async export(targets: TargetFile[]) {
+    console.log('Registry export');
     const nextVars = { registry: this.version };
     for (const target of targets) {
       if (target.type === TargetType.Registry) {
@@ -43,6 +44,7 @@ export default class Registry {
   }
 
   async sync() {
+    console.log('Registry sync');
     for (const [, collection] of this.collections) {
       await collection.sync();
     }

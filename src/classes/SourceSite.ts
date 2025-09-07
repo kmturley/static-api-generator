@@ -1,4 +1,4 @@
-import { CheerioCrawler } from 'crawlee';
+import { CheerioCrawler, log, LogLevel } from 'crawlee';
 import { SourceConfig } from '../types/Source.js';
 import Source from './Source.js';
 
@@ -12,8 +12,10 @@ export default class SourceSite extends Source {
       throw new Error('Mapper function is required for SourceSite');
     const mapper = this.config.mapper;
     const items: any[] = [];
+    log.setLevel(LogLevel.WARNING);
     const crawler = new CheerioCrawler({
-      async requestHandler({ $ }) {
+      async requestHandler({ request, $ }) {
+        console.log(`🌐 ${request.url}`);
         items.push(...mapper($));
       },
       maxRequestsPerCrawl: 1,

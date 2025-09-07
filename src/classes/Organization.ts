@@ -15,8 +15,10 @@ export default class Organization {
   addPackage(pkg: Package) {
     const existing = this.packages.get(pkg.slug);
     if (existing) {
+      console.log('📦', pkg.org + '/' + pkg.slug, '(merge)');
       existing.merge(pkg.get());
     } else {
+      console.log('📦', pkg.org + '/' + pkg.slug);
       this.packages.set(pkg.slug, pkg);
     }
   }
