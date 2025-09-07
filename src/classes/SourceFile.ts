@@ -12,10 +12,22 @@ export default class SourceFile extends Source {
       console.log(`📂 ${path}`);
       try {
         const text: string = await readFile(path, 'utf-8');
-        this.import(text);
+        const source: any = this.parse(text);
+        this.items = this.items.concat(this.mapFile(source, path));
       } catch (error) {
         console.error(`Failed to read file ${path}:`, error);
       }
     }
+  }
+
+  mapFile(source: any, path: string) {
+    const parts = path.split(/[/.]+/).slice(0, -1);
+    return [
+      {
+        org: parts[parts.length - 2],
+        slug: parts[parts.length - 1],
+        data: source,
+      },
+    ];
   }
 }

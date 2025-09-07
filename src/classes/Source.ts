@@ -43,6 +43,9 @@ export default abstract class Source {
   }
 
   map(source: any) {
-    return this.config.mapper ? this.config.mapper(source) : [source];
+    if (this.config.mapper) {
+      return this.config.mapper(source);
+    }
+    return [source];
   }
 }

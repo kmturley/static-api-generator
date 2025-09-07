@@ -3,9 +3,11 @@ import TargetFile from './TargetFile.js';
 
 export default class Package {
   slug: string;
+  org: string;
   data: any;
 
-  constructor(slug: string, data: any) {
+  constructor(org: string, slug: string, data: any) {
+    this.org = org;
     this.slug = slug;
     this.data = data;
   }

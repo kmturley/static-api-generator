@@ -32,7 +32,10 @@ const apis = new SourceApi({
     {
       org: toSlug(source.email),
       slug: toSlug(source.name),
-      title: source.name,
+      data: {
+        title: source.name,
+        author: source.email,
+      },
     },
   ],
 });
@@ -49,9 +52,12 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      org: toSlug($('.c-gameDetails_Developer a').text()),
-      slug: toSlug($('h1').text()),
-      title: $('h1').text(),
+      org: toSlug($('.c-gameDetails_Developer a').text().trim()),
+      slug: toSlug($('h1').text().trim()),
+      data: {
+        title: $('h1').text().trim(),
+        author: $('.c-gameDetails_Developer a').text().trim(),
+      },
     },
   ],
 });

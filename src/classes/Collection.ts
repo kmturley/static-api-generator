@@ -29,13 +29,10 @@ export default class Collection {
     if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
 
-    const orgName = pkg.get().org;
-
-    if (!this.orgs.has(orgName)) {
-      this.orgs.set(orgName, new Organization(orgName));
+    if (!this.orgs.has(pkg.org)) {
+      this.orgs.set(pkg.org, new Organization(pkg.org));
     }
-
-    this.orgs.get(orgName)!.addPackage(pkg);
+    this.orgs.get(pkg.org)!.addPackage(pkg);
   }
 
   getPackage(orgName: string, slug: string) {
@@ -91,7 +88,7 @@ export default class Collection {
     for (const source of this.sources) {
       const items: any[] = source.get();
       for (const item of items) {
-        const pkg = new Package(item.slug, item);
+        const pkg = new Package(item.org, item.slug, item.data);
         this.addPackage(pkg);
       }
     }
