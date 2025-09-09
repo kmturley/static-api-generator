@@ -7,7 +7,7 @@ export interface CollectionConfig {
 }
 
 export interface CollectionInterface {
-  [id: string]: OrganizationInterface;
+  [orgId: string]: OrganizationInterface;
 }
 
 export type CollectionValidator = (obj: any) => boolean;

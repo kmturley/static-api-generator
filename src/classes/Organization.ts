@@ -13,18 +13,18 @@ export default class Organization {
   }
 
   addPackage(pkg: Package) {
-    const existing = this.packages.get(pkg.slug);
+    const existing = this.packages.get(pkg.pkgId);
     if (existing) {
-      console.log('📦', pkg.org + '/' + pkg.slug, '(merge)');
+      console.log('📦', pkg.orgId + '/' + pkg.pkgId, '(merge)');
       existing.merge(pkg.get());
     } else {
-      console.log('📦', pkg.org + '/' + pkg.slug);
-      this.packages.set(pkg.slug, pkg);
+      console.log('📦', pkg.orgId + '/' + pkg.pkgId);
+      this.packages.set(pkg.pkgId, pkg);
     }
   }
 
-  getPackage(slug: string) {
-    return this.packages.get(slug);
+  getPackage(pkgId: string) {
+    return this.packages.get(pkgId);
   }
 
   listPackages() {
@@ -41,13 +41,13 @@ export default class Organization {
     }
 
     for (const [, pkg] of this.packages) {
-      await pkg.export(targets, { ...nextVars, package: pkg.slug });
+      await pkg.export(targets, { ...nextVars, package: pkg.pkgId });
     }
   }
 
   toJSON(): OrganizationInterface {
     return Object.fromEntries(
-      Array.from(this.packages, ([slug, pkg]) => [slug, pkg.toJSON()]),
+      Array.from(this.packages, ([pkgId, pkg]) => [pkgId, pkg.toJSON()]),
     );
   }
 }

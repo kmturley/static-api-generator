@@ -13,8 +13,8 @@ export enum SourceFormat {
 }
 
 export interface SourceMapped {
-  org: string;
-  slug: string;
+  orgId: string;
+  pkgId: string;
   data: unknown;
 }
 

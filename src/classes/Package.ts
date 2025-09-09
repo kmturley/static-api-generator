@@ -3,13 +3,13 @@ import { TargetType } from '../types/Target.js';
 import TargetFile from './TargetFile.js';
 
 export default class Package {
-  slug: string;
-  org: string;
+  orgId: string;
+  pkgId: string;
   data: any;
 
-  constructor(org: string, slug: string, data: any) {
-    this.org = org;
-    this.slug = slug;
+  constructor(orgId: string, pkgId: string, data: any) {
+    this.orgId = orgId;
+    this.pkgId = pkgId;
     this.data = data;
   }
 
@@ -22,7 +22,7 @@ export default class Package {
   }
 
   async export(targets: TargetFile[], vars: any) {
-    const nextVars = { ...vars, package: this.slug };
+    const nextVars = { ...vars, package: this.pkgId };
     for (const target of targets) {
       if (target.type === TargetType.Package) {
         await target.export(this, nextVars);

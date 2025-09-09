@@ -30,8 +30,8 @@ const apis = new SourceApi({
   paths: ['https://jsonplaceholder.typicode.com/comments/1'],
   mapper: source => [
     {
-      org: toSlug(source.email),
-      slug: toSlug(source.name),
+      orgId: toSlug(source.email),
+      pkgId: toSlug(source.name),
       data: {
         title: source.name,
         author: source.email,
@@ -52,8 +52,8 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      org: toSlug($('.c-gameDetails_Developer a').text().trim()),
-      slug: toSlug($('h1').text().trim()),
+      orgId: toSlug($('.c-gameDetails_Developer a').text().trim()),
+      pkgId: toSlug($('h1').text().trim()),
       data: {
         title: $('h1').text().trim(),
         author: $('.c-gameDetails_Developer a').text().trim(),

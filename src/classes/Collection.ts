@@ -28,15 +28,15 @@ export default class Collection {
     if (this.validator && !this.validator(pkg.get()))
       return console.warn('Not valid', pkg);
 
-    if (!this.orgs.has(pkg.org)) {
-      this.orgs.set(pkg.org, new Organization(pkg.org));
+    if (!this.orgs.has(pkg.orgId)) {
+      this.orgs.set(pkg.orgId, new Organization(pkg.orgId));
     }
-    this.orgs.get(pkg.org)!.addPackage(pkg);
+    this.orgs.get(pkg.orgId)!.addPackage(pkg);
   }
 
-  getPackage(orgName: string, slug: string) {
-    const org = this.orgs.get(orgName);
-    return org?.getPackage(slug);
+  getPackage(orgId: string, pkgId: string) {
+    const org = this.orgs.get(orgId);
+    return org?.getPackage(pkgId);
   }
 
   listPackages() {
@@ -47,12 +47,12 @@ export default class Collection {
     return packages;
   }
 
-  removePackage(orgName: string, slug: string) {
-    const org = this.orgs.get(orgName);
+  removePackage(orgId: string, pkgId: string) {
+    const org = this.orgs.get(orgId);
     if (org) {
-      org.packages.delete(slug);
+      org.packages.delete(pkgId);
       if (org.packages.size === 0) {
-        this.orgs.delete(orgName);
+        this.orgs.delete(orgId);
       }
     }
   }
@@ -88,7 +88,7 @@ export default class Collection {
       const items: any[] = source.get();
       console.log(source.constructor.name);
       for (const item of items) {
-        const pkg = new Package(item.org, item.slug, item.data);
+        const pkg = new Package(item.orgId, item.pkgId, item.data);
         this.addPackage(pkg);
       }
     }
@@ -96,7 +96,7 @@ export default class Collection {
 
   toJSON(): CollectionInterface {
     return Object.fromEntries(
-      Array.from(this.orgs, ([name, org]) => [name, org.toJSON()]),
+      Array.from(this.orgs, ([orgId, org]) => [orgId, org.toJSON()]),
     );
   }
 }
