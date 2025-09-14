@@ -17,16 +17,16 @@ export default class Registry {
   }
 
   addCollection(collection: Collection) {
-    this.collections.set(collection.type, collection);
+    this.collections.set(collection.id, collection);
   }
 
-  getCollection(type: string) {
-    return this.collections.get(type);
+  getCollection(id: string) {
+    return this.collections.get(id);
   }
 
   async export(targets: TargetFile[]) {
     console.log('Registry export');
-    const nextVars = { registry: this.version };
+    const nextVars = { registry: { name: this.name, version: this.version } };
     for (const target of targets) {
       if (target.type === TargetType.Registry) {
         await target.export(this, nextVars);

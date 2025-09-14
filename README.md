@@ -1,12 +1,28 @@
 # static-api-generator
 
-Build and deploy a static API using:
+Build and deploy a static API. Features implemented:
 
-- NodeJS 20.x
-- TypeScript 5.x
-- eslint 8.x
-- prettier 3.x
-- vitest 1.x
+- Import data from different sources:
+  - Api endpoints (REST)
+  - Files (Csv, Json, Yaml, Xml)
+  - Site page crawlers (Html)
+- Searchable registry containing:
+  - Collections of packages
+  - Group packages by organization/author
+- Export data to different targets:
+  - Files (Csv, Json, Yaml, Xml)
+  - Variables in export file pattern
+- Automations:
+  - GitHub action workflows (test, build, deploy)
+
+Features planned:
+
+- Browser/server classes with shared isomorphic code
+- Validate package schema, values and links
+- User-friendly report/log/debug output
+- Unit and integration tests
+- Command line tool support
+- Export aggregate/id-only endpoints
 
 <div align="center">
 

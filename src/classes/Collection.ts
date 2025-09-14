@@ -3,6 +3,7 @@ import {
   CollectionInterface,
   CollectionValidator,
 } from '../types/Collection.js';
+import { SourceMapped } from '../types/Source.js';
 import { TargetType } from '../types/Target.js';
 import Organization from './Organization.js';
 import Package from './Package.js';
@@ -14,14 +15,14 @@ export default class Collection {
   private orgs: Map<string, Organization>;
   private sources: Source[] = [];
   private validator?: CollectionValidator;
-  type: string;
+  id: string;
 
-  constructor(type: string, config: CollectionConfig) {
+  constructor(id: string, config: CollectionConfig) {
     this.config = config;
     this.orgs = new Map();
     this.sources = this.config.sources;
     this.validator = this.config.validator;
-    this.type = type;
+    this.id = id;
   }
 
   addPackage(pkg: Package) {
@@ -34,9 +35,9 @@ export default class Collection {
     this.orgs.get(pkg.orgId)!.addPackage(pkg);
   }
 
-  getPackage(orgId: string, pkgId: string) {
+  getPackage(orgId: string, id: string) {
     const org = this.orgs.get(orgId);
-    return org?.getPackage(pkgId);
+    return org?.getPackage(id);
   }
 
   listPackages() {
@@ -47,10 +48,10 @@ export default class Collection {
     return packages;
   }
 
-  removePackage(orgId: string, pkgId: string) {
+  removePackage(orgId: string, id: string) {
     const org = this.orgs.get(orgId);
     if (org) {
-      org.packages.delete(pkgId);
+      org.packages.delete(id);
       if (org.packages.size === 0) {
         this.orgs.delete(orgId);
       }
@@ -69,14 +70,12 @@ export default class Collection {
   }
 
   async export(targets: TargetFile[], vars: any) {
-    const nextVars = { ...vars, collection: this.type };
-
+    const nextVars = { ...vars, collection: { id: this.id } };
     for (const target of targets) {
       if (target.type === TargetType.Collection) {
         await target.export(this, nextVars);
       }
     }
-
     for (const [, org] of this.orgs) {
       await org.export(targets, nextVars);
     }
@@ -85,7 +84,7 @@ export default class Collection {
   async sync() {
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
-      const items: any[] = source.get();
+      const items: SourceMapped[] = source.get();
       console.log(source.constructor.name);
       for (const item of items) {
         const pkg = new Package(item.orgId, item.pkgId, item.data);

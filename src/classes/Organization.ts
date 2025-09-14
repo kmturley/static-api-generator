@@ -4,27 +4,27 @@ import Package from './Package.js';
 import TargetFile from './TargetFile.js';
 
 export default class Organization {
-  name: string;
+  id: string;
   packages: Map<string, Package>;
 
-  constructor(name: string) {
-    this.name = name;
+  constructor(id: string) {
+    this.id = id;
     this.packages = new Map();
   }
 
   addPackage(pkg: Package) {
-    const existing = this.packages.get(pkg.pkgId);
+    const existing = this.packages.get(pkg.id);
     if (existing) {
-      console.log('📦', pkg.orgId + '/' + pkg.pkgId, '(merge)');
+      console.log('📦', pkg.orgId + '/' + pkg.id, '(merge)');
       existing.merge(pkg.get());
     } else {
-      console.log('📦', pkg.orgId + '/' + pkg.pkgId);
-      this.packages.set(pkg.pkgId, pkg);
+      console.log('📦', pkg.orgId + '/' + pkg.id);
+      this.packages.set(pkg.id, pkg);
     }
   }
 
-  getPackage(pkgId: string) {
-    return this.packages.get(pkgId);
+  getPackage(id: string) {
+    return this.packages.get(id);
   }
 
   listPackages() {
@@ -32,22 +32,20 @@ export default class Organization {
   }
 
   async export(targets: TargetFile[], vars: any) {
-    const nextVars = { ...vars, org: this.name };
-
+    const nextVars = { ...vars, organization: { id: this.id } };
     for (const target of targets) {
       if (target.type === TargetType.Org) {
         await target.export(this, nextVars);
       }
     }
-
     for (const [, pkg] of this.packages) {
-      await pkg.export(targets, { ...nextVars, package: pkg.pkgId });
+      await pkg.export(targets, nextVars);
     }
   }
 
   toJSON(): OrganizationInterface {
     return Object.fromEntries(
-      Array.from(this.packages, ([pkgId, pkg]) => [pkgId, pkg.toJSON()]),
+      Array.from(this.packages, ([id, pkg]) => [id, pkg.toJSON()]),
     );
   }
 }

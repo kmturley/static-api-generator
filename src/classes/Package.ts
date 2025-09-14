@@ -4,12 +4,12 @@ import TargetFile from './TargetFile.js';
 
 export default class Package {
   orgId: string;
-  pkgId: string;
+  id: string;
   data: any;
 
-  constructor(orgId: string, pkgId: string, data: any) {
+  constructor(orgId: string, id: string, data: any) {
     this.orgId = orgId;
-    this.pkgId = pkgId;
+    this.id = id;
     this.data = data;
   }
 
@@ -22,7 +22,7 @@ export default class Package {
   }
 
   async export(targets: TargetFile[], vars: any) {
-    const nextVars = { ...vars, package: this.pkgId };
+    const nextVars = { ...vars, package: { id: this.id } };
     for (const target of targets) {
       if (target.type === TargetType.Package) {
         await target.export(this, nextVars);

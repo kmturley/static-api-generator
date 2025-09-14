@@ -8,7 +8,7 @@ export default class TargetFile extends Target {
     super(config);
   }
 
-  async export(data: any, patternVars: Record<string, string | number> = {}) {
+  async export(data: any, patternVars: Record<string, any> = {}) {
     const outPath = this.replace(this.pattern, patternVars);
     const dir = path.dirname(outPath);
     const content = await this.convert(data.toJSON());

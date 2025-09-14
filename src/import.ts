@@ -72,7 +72,7 @@ await registry.sync();
 await registry.export([
   new TargetFile({
     format: TargetFormat.Yaml,
-    pattern: './data/${collection}/${org}/${package}.yaml',
+    pattern: './data/${collection.id}/${organization.id}/${package.id}.yaml',
     type: TargetType.Package,
   }),
 ]);

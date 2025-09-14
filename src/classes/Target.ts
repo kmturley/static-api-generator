@@ -14,14 +14,14 @@ export default abstract class Target {
     this.type = config.type;
   }
 
-  abstract export(
-    data: any,
-    patternVars?: Record<string, string | number>,
-  ): Promise<void>;
+  abstract export(data: any, patternVars?: Record<string, any>): Promise<void>;
 
-  replace(pattern: string, vars: Record<string, string | number>): string {
+  replace(pattern: string, vars: Record<string, any>): string {
     return pattern.replace(/\$\{([^}]+)\}/g, (_, key) => {
-      return vars[key] !== undefined ? String(vars[key]) : key;
+      const value = key
+        .split('.')
+        .reduce((obj: any, prop: any) => obj?.[prop], vars);
+      return value !== undefined ? String(value) : key;
     });
   }
 
