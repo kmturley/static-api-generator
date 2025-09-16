@@ -6,7 +6,7 @@
 import { glob } from 'glob';
 import slugify from 'slugify';
 import { SourceFormat } from './types/Source.js';
-import { BookValidator, Library } from './types/Example.js';
+import { PackageValidator } from './types/Package.js';
 import Registry from './classes/Registry.js';
 import Collection from './classes/Collection.js';
 import SourceFile from './classes/SourceFile.js';
@@ -62,9 +62,9 @@ const pages = new SourceSite({
   ],
 });
 
-const books = new Collection(Library.Books, {
+const books = new Collection('books', {
   sources: [apis, files, pages],
-  validator: BookValidator,
+  validator: PackageValidator,
 });
 
 registry.addCollection(books);

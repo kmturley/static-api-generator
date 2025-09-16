@@ -7,7 +7,7 @@ import { glob } from 'glob';
 import Collection from './classes/Collection.js';
 import Registry from './classes/Registry.js';
 import { SourceFormat } from './types/Source.js';
-import { BookValidator, Library } from './types/Example.js';
+import { PackageValidator } from './types/Package.js';
 import SourceFile from './classes/SourceFile.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
@@ -23,9 +23,9 @@ const filesIn = new SourceFile({
   paths: await glob('./data/books/**/*.yaml'),
 });
 
-const books = new Collection(Library.Books, {
+const books = new Collection('books', {
   sources: [filesIn],
-  validator: BookValidator,
+  validator: PackageValidator,
 });
 
 registry.addCollection(books);
