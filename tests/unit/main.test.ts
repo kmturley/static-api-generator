@@ -1,18 +1,18 @@
 import { expect, test } from 'vitest';
 import { glob } from 'glob';
 
-import Collection from '../src/classes/Collection.js';
-import Organization from '../src/classes/Organization.js';
-import Package from '../src/classes/Package.js';
-import Registry from '../src/classes/Registry.js';
-import SourceFile from '../src/classes/SourceFile.js';
-import Target from '../src/classes/Target.js';
-import { CollectionValidator } from '../src/types/Collection.js';
-import { OrganizationValidator } from '../src/types/Organization.js';
-import { PackageValidator } from '../src/types/Package.js';
-import { RegistryValidator } from '../src/types/Registry.js';
-import { SourceFormat } from '../src/types/Source.js';
-import { TargetFormat, TargetType } from '../src/types/Target.js';
+import Collection from '../../src/classes/Collection.js';
+import Organization from '../../src/classes/Organization.js';
+import Package from '../../src/classes/Package.js';
+import Registry from '../../src/classes/Registry.js';
+import SourceFile from '../../src/classes/SourceFile.js';
+import Target from '../../src/classes/Target.js';
+import { CollectionValidator } from '../../src/types/Collection.js';
+import { OrganizationValidator } from '../../src/types/Organization.js';
+import { PackageValidator } from '../../src/types/Package.js';
+import { RegistryValidator } from '../../src/types/Registry.js';
+import { SourceFormat } from '../../src/types/Source.js';
+import { TargetFormat, TargetType } from '../../src/types/Target.js';
 
 test('Package class', () => {
   const pkg = new Package('test-org', 'test-pkg', {

@@ -23,10 +23,14 @@ jobs:
         run: |
           npm run lint
 
-      - name: Test
+      - name: Unit test
         run: |
           npm test
 
       - name: Build
         run: |
           npm run build && npm start
+
+      - name: Integration test
+        run: |
+          npm run test:integration

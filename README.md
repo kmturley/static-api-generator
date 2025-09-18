@@ -14,13 +14,13 @@ Build and deploy a static API. Features implemented:
   - Variables in export file pattern
 - Automations:
   - GitHub action workflows (test, build, deploy)
+  - Unit and integration tests
 
 Features planned:
 
 - Browser/server classes with shared isomorphic code
 - Validate package schema, values and links
 - User-friendly report/log/debug output
-- Unit and integration tests
 - Command line tool support
 - Export aggregate/id-only endpoints
 
