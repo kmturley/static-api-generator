@@ -8,4 +8,4 @@ export interface OrganizationInterface {
 export const OrganizationSchema = z.record(z.string(), PackageSchema);
 
 export const OrganizationValidator = (item: OrganizationInterface) =>
-  OrganizationSchema.safeParse(item).success;
+  OrganizationSchema.safeParse(item);

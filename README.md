@@ -12,15 +12,15 @@ Build and deploy a static API. Features implemented:
 - Export data to different targets:
   - Files (Csv, Json, Yaml, Xml)
   - Variables in export file pattern
-- Automations:
+- Automations and tools:
   - GitHub action workflows (test, build, deploy)
   - Unit and integration tests
+  - User-friendly report/log/debug output
 
 Features planned:
 
 - Browser/server classes with shared isomorphic code
 - Validate package schema, values and links
-- User-friendly report/log/debug output
 - Command line tool support
 - Export aggregate/id-only endpoints
 

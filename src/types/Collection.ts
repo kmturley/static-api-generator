@@ -11,9 +11,12 @@ export interface CollectionInterface {
   [orgId: string]: OrganizationInterface;
 }
 
-export type CollectionValidator = (obj: any) => boolean;
+export type CollectionValidator = (obj: any) => {
+  success: boolean;
+  error?: any;
+};
 
 export const CollectionSchema = z.record(z.string(), OrganizationSchema);
 
 export const CollectionValidator = (item: CollectionInterface) =>
-  CollectionSchema.safeParse(item).success;
+  CollectionSchema.safeParse(item);

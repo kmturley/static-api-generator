@@ -5,6 +5,8 @@ import {
 } from '../types/Collection.js';
 import { SourceMapped } from '../types/Source.js';
 import { TargetType } from '../types/Target.js';
+import { logger } from '../utils/Logger.js';
+import { ValidationReport } from '../utils/ValidationReport.js';
 import Organization from './Organization.js';
 import Package from './Package.js';
 import Source from './Source.js';
@@ -25,9 +27,26 @@ export default class Collection {
     this.id = id;
   }
 
-  addPackage(pkg: Package) {
-    if (this.validator && !this.validator(pkg.get()))
-      return console.warn('Not valid', pkg);
+  addPackage(pkg: Package, report?: ValidationReport) {
+    if (this.validator) {
+      const result = this.validator(pkg.get());
+      if (report) {
+        if (typeof result === 'boolean') {
+          report.addCustomResult(
+            `${pkg.orgId}/${pkg.id}`,
+            result,
+            result ? undefined : 'Package validation failed',
+          );
+        } else {
+          report.addZodResult(`${pkg.orgId}/${pkg.id}`, result);
+        }
+      }
+      const isValid = typeof result === 'boolean' ? result : result.success;
+      if (!isValid) {
+        logger.warn(`Invalid package: ${pkg.orgId}/${pkg.id}`);
+        return;
+      }
+    }
 
     if (!this.orgs.has(pkg.orgId)) {
       this.orgs.set(pkg.orgId, new Organization(pkg.orgId));
@@ -81,16 +100,20 @@ export default class Collection {
     }
   }
 
-  async sync() {
+  async sync(report?: ValidationReport) {
+    logger.info('Collection sync started');
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
       const items: SourceMapped[] = source.get();
-      console.log(source.constructor.name);
+      logger.debug(`Processing ${source.constructor.name}`);
       for (const item of items) {
         const pkg = new Package(item.orgId, item.pkgId, item.data);
-        this.addPackage(pkg);
+        this.addPackage(pkg, report);
       }
     }
+    logger.info(
+      `Collection sync completed: ${this.listPackages().length} packages`,
+    );
   }
 
   toJSON(): CollectionInterface {

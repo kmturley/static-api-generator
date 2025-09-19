@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 import { SourceConfig, SourceMapped } from '../types/Source.js';
+import { logger } from '../utils/Logger.js';
 import Source from './Source.js';
 
 export default class SourceFile extends Source {
@@ -9,13 +10,13 @@ export default class SourceFile extends Source {
 
   async sync() {
     for (const path of this.getPaths()) {
-      console.log(`📂 ${path}`);
+      logger.debug(`📂 ${path}`);
       try {
         const text: string = await readFile(path, 'utf-8');
         const source: any = this.parse(text);
         this.items = this.items.concat(this.mapFile(source, path));
       } catch (error) {
-        console.error(`Failed to read file ${path}:`, error);
+        logger.error(`Failed to read file ${path}:`, error);
       }
     }
   }

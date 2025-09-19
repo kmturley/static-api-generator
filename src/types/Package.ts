@@ -13,4 +13,4 @@ export const PackageSchema = z.object({
 });
 
 export const PackageValidator = (item: PackageInterface) =>
-  PackageSchema.safeParse(item).success;
+  PackageSchema.safeParse(item);

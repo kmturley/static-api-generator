@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import Target from './Target.js';
 import { TargetConfig } from '../types/Target.js';
+import { logger } from '../utils/Logger.js';
 
 export default class TargetFile extends Target {
   constructor(config: TargetConfig) {
@@ -14,6 +15,6 @@ export default class TargetFile extends Target {
     const content = await this.convert(data.toJSON());
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(outPath, content, 'utf-8');
-    console.log(`📄 ${outPath}`);
+    logger.debug(`📄 ${outPath}`);
   }
 }

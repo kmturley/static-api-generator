@@ -17,11 +17,11 @@ test('Target pattern replacement works correctly', async () => {
       .replace('/index.json', '')
       .split('/');
     if (pathParts.length === 3) {
-      const [collectionId, orgId, pkgId] = pathParts;
+      const [collectionId, orgId, id] = pathParts;
       const content = JSON.parse(await readFile(file, 'utf-8'));
       expect(collectionId).toBe(COLLECTION_ID);
       expect(orgId).toBeTruthy();
-      expect(pkgId).toBeTruthy();
+      expect(id).toBeTruthy();
       expect(content).toHaveProperty('title');
     }
   }
@@ -40,8 +40,8 @@ test('Variable substitution creates correct folder structure', async () => {
       )) {
         const orgPath = `./out/${collectionId}/${orgId}/index.json`;
         expect(await readFile(orgPath, 'utf-8')).toBeTruthy();
-        for (const [pkgId] of Object.entries(org as Record<string, any>)) {
-          const pkgPath = `./out/${collectionId}/${orgId}/${pkgId}/index.json`;
+        for (const [id] of Object.entries(org as Record<string, any>)) {
+          const pkgPath = `./out/${collectionId}/${orgId}/${id}/index.json`;
           const pkgContent = JSON.parse(await readFile(pkgPath, 'utf-8'));
           expect(pkgContent).toHaveProperty('title');
           expect(typeof pkgContent.title).toBe('string');
@@ -77,9 +77,9 @@ test('Pattern variables match actual data structure', async () => {
         collection as Record<string, any>,
       )) {
         expect(orgId).toMatch(/^[a-z0-9-]+$/);
-        for (const [pkgId, pkg] of Object.entries(org as Record<string, any>)) {
-          expect(pkgId).toMatch(/^[a-z0-9-]+$/);
-          const pkgFile = `./out/${collectionId}/${orgId}/${pkgId}/index.json`;
+        for (const [id, pkg] of Object.entries(org as Record<string, any>)) {
+          expect(id).toMatch(/^[a-z0-9-]+$/);
+          const pkgFile = `./out/${collectionId}/${orgId}/${id}/index.json`;
           const pkgContent = JSON.parse(await readFile(pkgFile, 'utf-8'));
           expect(pkgContent).toEqual(pkg);
         }

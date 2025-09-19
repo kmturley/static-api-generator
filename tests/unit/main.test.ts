@@ -23,7 +23,7 @@ test('Package class', () => {
   expect(pkg.orgId).toBe('test-org');
   expect(pkg.id).toBe('test-pkg');
   expect(pkg.get()).toEqual({ title: 'Test Book', author: 'Test Author' });
-  expect(PackageValidator(pkg.toJSON())).toBe(true);
+  expect(PackageValidator(pkg.toJSON()).success).toBe(true);
 
   pkg.merge({ year: 2023 });
   expect(pkg.get().year).toBe(2023);
@@ -38,7 +38,7 @@ test('Organization class', () => {
   expect(org.id).toBe('test-org');
   expect(org.getPackage('test-pkg')).toBe(pkg);
   expect(org.listPackages()).toHaveLength(1);
-  expect(OrganizationValidator(org.toJSON())).toBe(true);
+  expect(OrganizationValidator(org.toJSON()).success).toBe(true);
 });
 
 test('Collection class', () => {
@@ -51,7 +51,7 @@ test('Collection class', () => {
   expect(collection.getPackage('test-org', 'test-pkg')).toBe(pkg);
   expect(collection.listPackages()).toHaveLength(1);
   expect(collection.search('test')).toHaveLength(1);
-  expect(CollectionValidator(collection.toJSON())).toBe(true);
+  expect(CollectionValidator(collection.toJSON()).success).toBe(true);
 });
 
 test('Registry class', () => {
@@ -66,7 +66,7 @@ test('Registry class', () => {
 
   expect(registry.name).toBe('Test Library');
   expect(registry.getCollection('books')).toBe(collection);
-  expect(RegistryValidator(registry.toJSON())).toBe(true);
+  expect(RegistryValidator(registry.toJSON()).success).toBe(true);
 });
 
 test('Target replace method', () => {
@@ -76,14 +76,14 @@ test('Target replace method', () => {
 
   const target = new TestTarget({
     format: TargetFormat.Json,
-    pattern: '${collection.type}/${org.name}/${package.pkgId}',
+    pattern: '${collection.id}/${org.id}/${package.id}',
     type: TargetType.Package,
   });
 
   const vars = {
-    collection: { type: 'books' },
-    org: { name: 'test-org' },
-    package: { pkgId: 'test-pkg' },
+    collection: { id: 'books' },
+    org: { id: 'test-org' },
+    package: { id: 'test-pkg' },
   };
 
   expect(target.replace(target.pattern, vars)).toBe('books/test-org/test-pkg');
@@ -121,5 +121,5 @@ test('Registry integration', async () => {
   registry.addCollection(books);
   await registry.sync();
 
-  expect(RegistryValidator(registry.toJSON())).toBe(true);
+  expect(RegistryValidator(registry.toJSON()).success).toBe(true);
 });

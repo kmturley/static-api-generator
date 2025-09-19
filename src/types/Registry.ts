@@ -23,4 +23,4 @@ export const RegistrySchema = z
   .and(z.record(z.string(), z.union([CollectionSchema, z.string()])));
 
 export const RegistryValidator = (item: RegistryInterface) =>
-  RegistrySchema.safeParse(item).success;
+  RegistrySchema.safeParse(item);

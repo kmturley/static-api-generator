@@ -1,5 +1,6 @@
 import { CheerioCrawler, log, LogLevel } from 'crawlee';
 import { SourceConfig } from '../types/Source.js';
+import { logger } from '../utils/Logger.js';
 import Source from './Source.js';
 
 export default class SourceSite extends Source {
@@ -15,7 +16,7 @@ export default class SourceSite extends Source {
     log.setLevel(LogLevel.WARNING);
     const crawler = new CheerioCrawler({
       async requestHandler({ request, $ }) {
-        console.log(`🌐 ${request.url}`);
+        logger.debug(`🌐 ${request.url}`);
         items.push(...mapper($));
       },
       maxRequestsPerCrawl: 1,

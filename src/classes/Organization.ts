@@ -1,5 +1,6 @@
 import { OrganizationInterface } from '../types/Organization.js';
 import { TargetType } from '../types/Target.js';
+import { logger } from '../utils/Logger.js';
 import Package from './Package.js';
 import TargetFile from './TargetFile.js';
 
@@ -15,10 +16,10 @@ export default class Organization {
   addPackage(pkg: Package) {
     const existing = this.packages.get(pkg.id);
     if (existing) {
-      console.log('📦', pkg.orgId + '/' + pkg.id, '(merge)');
+      logger.debug(`📦 ${pkg.orgId}/${pkg.id} (merge)`);
       existing.merge(pkg.get());
     } else {
-      console.log('📦', pkg.orgId + '/' + pkg.id);
+      logger.debug(`📦 ${pkg.orgId}/${pkg.id}`);
       this.packages.set(pkg.id, pkg);
     }
   }
