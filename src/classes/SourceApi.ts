@@ -9,7 +9,7 @@ export default class SourceApi extends Source {
 
   async sync() {
     for (const path of this.getPaths()) {
-      logger.info(`🔗 ${path}`);
+      logger.info(`  🔗 ${path}`);
       const response: Response = await fetch(path);
       const text: string = await response.text();
       this.import(text);

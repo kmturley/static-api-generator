@@ -15,6 +15,6 @@ export default class TargetFile extends Target {
     const content = await this.convert(data.toJSON());
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(outPath, content, 'utf-8');
-    logger.info(`📄 ${outPath}`);
+    logger.info(`  📄 ${outPath}`);
   }
 }

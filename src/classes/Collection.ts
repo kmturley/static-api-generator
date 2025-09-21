@@ -101,18 +101,20 @@ export default class Collection {
   }
 
   async sync(report?: Report) {
-    logger.info(`${this.id} sync started`);
+    logger.info(
+      `${logger['colorize']('❯', 'yellow')} Collection ${this.id} sync`,
+    );
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
       const items: SourceMapped[] = source.get();
-      logger.info(`${this.id} add ${source.constructor.name}`);
+      logger.info(`  ${source.constructor.name}:`);
       for (const item of items) {
         const pkg = new Package(item.orgId, item.pkgId, item.data);
         this.addPackage(pkg, report);
       }
     }
     logger.info(
-      `${this.id} sync completed: ${this.listPackages().length} packages`,
+      `  Packages:  ${this.listPackages().length}\n`,
     );
   }
 

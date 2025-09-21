@@ -27,7 +27,7 @@ export default class Registry {
   }
 
   async export(targets: TargetFile[]) {
-    logger.info('Registry export started');
+    logger.info(`${logger['colorize']('❯', 'yellow')} Registry export started`);
     const nextVars = { registry: { name: this.name, version: this.version } };
     for (const target of targets) {
       if (target.type === TargetType.Registry) {
@@ -37,7 +37,7 @@ export default class Registry {
     for (const [, collection] of this.collections) {
       await collection.export(targets, nextVars);
     }
-    logger.info('Registry export completed');
+    logger.info('  Export completed\n');
   }
 
   reset() {
@@ -48,14 +48,10 @@ export default class Registry {
 
   async sync() {
     const report = new Report();
-    logger.info('Registry sync started');
-
     for (const [, collection] of this.collections) {
       await collection.sync(report);
     }
-
     report.printSummary();
-    logger.info('Registry sync completed');
     return report.getSummary();
   }
 

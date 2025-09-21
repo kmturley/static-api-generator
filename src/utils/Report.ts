@@ -66,42 +66,42 @@ export class Report {
   printSummary() {
     const report = this.finish();
     const duration = report.duration ? `${report.duration}ms` : 'N/A';
-    console.log(`\n ${logger['colorize']('❯', 'yellow')} Package Report`);
+    logger.info(`${logger['colorize']('❯', 'yellow')} Package Report`);
     report.results.forEach(r => {
       const status = r.passed
         ? logger['colorize']('✓', 'green')
         : logger['colorize']('×', 'red');
-      console.log(`   ${status} ${r.id}`);
+      logger.info(`  ${status} ${r.id}`);
     });
     if (report.failed > 0) {
       const separator = '⎯'.repeat(20);
-      console.log(
+      logger.info(
         logger['colorize'](
-          `\n${separator} Failed Reports ${report.failed.toString()} ${separator}`,
+          `${separator} Failed Reports ${report.failed.toString()} ${separator}`,
           'red',
         ),
       );
       report.results
         .filter(r => !r.passed)
         .forEach(r => {
-          console.log(`\n${logger['colorize']('FAIL', 'red')} ${r.id}`);
+          logger.info(`${logger['colorize']('FAIL', 'red')} ${r.id}`);
           if (r.type === 'zod' && r.details) {
             r.details.forEach((issue: any) => {
               const path =
                 issue.path.length > 0 ? issue.path.join('.') : 'root';
-              console.log(
+              logger.info(
                 `${logger['colorize'](`ReportError: ${path} - ${issue.message}`, 'red')}`,
               );
             });
           } else {
-            console.log(
+            logger.info(
               `${logger['colorize'](`ReportError: ${r.message || 'Report failed'}`, 'red')}`,
             );
           }
         });
 
-      console.log(
-        logger['colorize'](`\n${separator}${separator}${separator}`, 'red'),
+      logger.info(
+        logger['colorize'](`${separator}${separator}${separator}`, 'red'),
       );
     }
     const failedText =
@@ -110,12 +110,12 @@ export class Report {
         : 'all passed';
     const passedText = logger['colorize'](report.passed + ' passed', 'green');
     if (report.failed > 0) {
-      console.log(
-        `\n   Packages  ${failedText} | ${passedText} (${report.totalTasks})`,
+      logger.info(
+        `  Packages  ${failedText} | ${passedText} (${report.totalTasks})`,
       );
     } else {
-      console.log(`\n   Packages  ${passedText} (${report.totalTasks})`);
+      logger.info(`  Packages  ${passedText} (${report.totalTasks})`);
     }
-    console.log(`   Duration  ${duration}\n`);
+    logger.info(`  Duration  ${duration}\n`);
   }
 }

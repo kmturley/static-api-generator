@@ -16,10 +16,10 @@ export default class Organization {
   addPackage(pkg: Package) {
     const existing = this.packages.get(pkg.id);
     if (existing) {
-      logger.info(`📦 ${pkg.orgId}/${pkg.id} (merge)`);
+      logger.info(`  📦 ${pkg.orgId}/${pkg.id} (merge)`);
       existing.merge(pkg.get());
     } else {
-      logger.info(`📦 ${pkg.orgId}/${pkg.id}`);
+      logger.info(`  📦 ${pkg.orgId}/${pkg.id}`);
       this.packages.set(pkg.id, pkg);
     }
   }
