@@ -101,18 +101,18 @@ export default class Collection {
   }
 
   async sync(report?: ValidationReport) {
-    logger.info('Collection sync started');
+    logger.info(`${this.id} sync started`);
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
       const items: SourceMapped[] = source.get();
-      logger.debug(`Processing ${source.constructor.name}`);
+      logger.info(`${this.id} add ${source.constructor.name}`);
       for (const item of items) {
         const pkg = new Package(item.orgId, item.pkgId, item.data);
         this.addPackage(pkg, report);
       }
     }
     logger.info(
-      `Collection sync completed: ${this.listPackages().length} packages`,
+      `${this.id} sync completed: ${this.listPackages().length} packages`,
     );
   }
 

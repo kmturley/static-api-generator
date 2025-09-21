@@ -16,11 +16,11 @@ Build and deploy a static API. Features implemented:
   - GitHub action workflows (test, build, deploy)
   - Unit and integration tests
   - User-friendly report/log/debug output
+  - Validate package schema
 
 Features planned:
 
 - Browser/server classes with shared isomorphic code
-- Validate package schema, values and links
 - Command line tool support
 - Export aggregate/id-only endpoints
 

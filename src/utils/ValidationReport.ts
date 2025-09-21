@@ -1,5 +1,5 @@
 import { ZodError } from 'zod';
-import { Logger } from './Logger.js';
+import { logger } from './Logger.js';
 
 export interface ValidationResult {
   id: string;
@@ -21,7 +21,6 @@ export interface ValidationSummary {
 
 export class ValidationReport {
   private summary: ValidationSummary;
-  private logger: Logger;
 
   constructor() {
     this.summary = {
@@ -31,7 +30,6 @@ export class ValidationReport {
       failed: 0,
       results: [],
     };
-    this.logger = new Logger();
   }
 
   addZodResult(id: string, result: { success: boolean; error?: ZodError }) {
@@ -88,22 +86,20 @@ export class ValidationReport {
     const report = this.finish();
     const duration = report.duration ? `${report.duration}ms` : 'N/A';
 
-    console.log(
-      `\n ${this.logger['colorize']('❯', 'yellow')} Package Validation`,
-    );
+    console.log(`\n ${logger['colorize']('❯', 'yellow')} Package Validation`);
 
     // Show all results with status indicators
     report.results.forEach(r => {
       const status = r.passed
-        ? this.logger['colorize']('✓', 'green')
-        : this.logger['colorize']('×', 'red');
+        ? logger['colorize']('✓', 'green')
+        : logger['colorize']('×', 'red');
       console.log(`   ${status} ${r.id}`);
     });
 
     if (report.failed > 0) {
       const separator = '⎯'.repeat(20);
       console.log(
-        this.logger['colorize'](
+        logger['colorize'](
           `\n${separator} Failed Validations ${report.failed.toString()} ${separator}`,
           'red',
         ),
@@ -112,38 +108,32 @@ export class ValidationReport {
       report.results
         .filter(r => !r.passed)
         .forEach(r => {
-          console.log(`\n${this.logger['colorize']('FAIL', 'red')} ${r.id}`);
+          console.log(`\n${logger['colorize']('FAIL', 'red')} ${r.id}`);
           if (r.type === 'zod' && r.details) {
             r.details.forEach((issue: any) => {
               const path =
                 issue.path.length > 0 ? issue.path.join('.') : 'root';
               console.log(
-                `${this.logger['colorize'](`ValidationError: ${path} - ${issue.message}`, 'red')}`,
+                `${logger['colorize'](`ValidationError: ${path} - ${issue.message}`, 'red')}`,
               );
             });
           } else {
             console.log(
-              `${this.logger['colorize'](`ValidationError: ${r.message || 'Validation failed'}`, 'red')}`,
+              `${logger['colorize'](`ValidationError: ${r.message || 'Validation failed'}`, 'red')}`,
             );
           }
         });
 
       console.log(
-        this.logger['colorize'](
-          `\n${separator}${separator}${separator}`,
-          'red',
-        ),
+        logger['colorize'](`\n${separator}${separator}${separator}`, 'red'),
       );
     }
 
     const failedText =
       report.failed > 0
-        ? `${this.logger['colorize'](report.failed + ' failed', 'red')}`
+        ? `${logger['colorize'](report.failed + ' failed', 'red')}`
         : 'all passed';
-    const passedText = this.logger['colorize'](
-      report.passed + ' passed',
-      'green',
-    );
+    const passedText = logger['colorize'](report.passed + ' passed', 'green');
 
     if (report.failed > 0) {
       console.log(

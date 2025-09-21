@@ -14,6 +14,9 @@ import SourceApi from './classes/SourceApi.js';
 import SourceSite from './classes/SourceSite.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
+import { logger, LogLevel } from './utils/Logger.js';
+
+logger.setLevel(LogLevel.INFO);
 
 function toSlug(item: string) {
   return slugify(item, { lower: true, strict: true });

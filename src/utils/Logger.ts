@@ -18,7 +18,7 @@ export class Logger {
   constructor(config: LoggerConfig = {}) {
     this.config = {
       enabled: true,
-      level: LogLevel.INFO,
+      level: LogLevel.WARN,
       colors: true,
       ...config,
     };
@@ -31,11 +31,9 @@ export class Logger {
 
   private colorize(text: string, color: string): string {
     if (!this.config.colors) return text;
-
     if (this.isBrowser) {
       return `%c${text}`;
     }
-
     const colors: Record<string, string> = {
       red: '\x1b[31m',
       yellow: '\x1b[33m',
@@ -49,17 +47,12 @@ export class Logger {
 
   private log(level: LogLevel, message: string, ...args: any[]) {
     if (!this.shouldLog(level)) return;
-
-    const timestamp = new Date().toISOString();
     const colors = ['red', 'yellow', 'blue', 'gray'];
-
     const levelText = this.colorize(`[${LogLevel[level]}]`, colors[level]);
-    const timeText = this.colorize(timestamp, 'gray');
-
     if (this.isBrowser && this.config.colors) {
-      console.log(`${timeText} ${levelText} ${message}`, ...args);
+      console.log(`${levelText} ${message}`, ...args);
     } else {
-      console.log(`${timeText} ${levelText} ${message}`, ...args);
+      console.log(`${levelText} ${message}`, ...args);
     }
   }
 
@@ -77,6 +70,18 @@ export class Logger {
 
   debug(message: string, ...args: any[]) {
     this.log(LogLevel.DEBUG, message, ...args);
+  }
+
+  setLevel(level: LogLevel) {
+    this.config.level = level;
+  }
+
+  setEnabled(enabled: boolean) {
+    this.config.enabled = enabled;
+  }
+
+  setColors(colors: boolean) {
+    this.config.colors = colors;
   }
 }
 

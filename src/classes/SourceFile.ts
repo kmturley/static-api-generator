@@ -10,7 +10,7 @@ export default class SourceFile extends Source {
 
   async sync() {
     for (const path of this.getPaths()) {
-      logger.debug(`📂 ${path}`);
+      logger.info(`📂 ${path}`);
       try {
         const text: string = await readFile(path, 'utf-8');
         const source: any = this.parse(text);

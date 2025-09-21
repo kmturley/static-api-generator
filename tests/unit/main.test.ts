@@ -13,6 +13,9 @@ import { PackageValidator } from '../../src/types/Package.js';
 import { RegistryValidator } from '../../src/types/Registry.js';
 import { SourceFormat } from '../../src/types/Source.js';
 import { TargetFormat, TargetType } from '../../src/types/Target.js';
+import { logger, LogLevel } from '../../src/utils/Logger.js';
+
+logger.setLevel(LogLevel.INFO);
 
 test('Package class', () => {
   const pkg = new Package('test-org', 'test-pkg', {

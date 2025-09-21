@@ -16,7 +16,7 @@ export default class SourceSite extends Source {
     log.setLevel(LogLevel.WARNING);
     const crawler = new CheerioCrawler({
       async requestHandler({ request, $ }) {
-        logger.debug(`🌐 ${request.url}`);
+        logger.info(`🌐 ${request.url}`);
         items.push(...mapper($));
       },
       maxRequestsPerCrawl: 1,

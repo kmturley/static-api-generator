@@ -11,6 +11,9 @@ import { PackageValidator } from './types/Package.js';
 import SourceFile from './classes/SourceFile.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
+import { logger, LogLevel } from './utils/Logger.js';
+
+logger.setLevel(LogLevel.INFO);
 
 const registry = new Registry({
   name: 'My library',
