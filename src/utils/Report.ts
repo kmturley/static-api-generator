@@ -1,26 +1,9 @@
 import { ZodError } from 'zod';
 import { logger } from './Logger.js';
+import { ReportResult, ReportSummary } from '../types/Report.js';
 
-export interface ValidationResult {
-  id: string;
-  type: 'zod' | 'custom';
-  passed: boolean;
-  message?: string;
-  details?: any;
-}
-
-export interface ValidationSummary {
-  startTime: number;
-  endTime?: number;
-  duration?: number;
-  totalTasks: number;
-  passed: number;
-  failed: number;
-  results: ValidationResult[];
-}
-
-export class ValidationReport {
-  private summary: ValidationSummary;
+export class Report {
+  private summary: ReportSummary;
 
   constructor() {
     this.summary = {
@@ -33,15 +16,14 @@ export class ValidationReport {
   }
 
   addZodResult(id: string, result: { success: boolean; error?: ZodError }) {
-    const validationResult: ValidationResult = {
+    const ReportResult: ReportResult = {
       id,
       type: 'zod',
       passed: result.success,
       message: result.error?.message,
       details: result.error?.issues,
     };
-
-    this.addResult(validationResult);
+    this.addResult(ReportResult);
   }
 
   addCustomResult(
@@ -50,7 +32,7 @@ export class ValidationReport {
     message?: string,
     details?: any,
   ) {
-    const validationResult: ValidationResult = {
+    const ReportResult: ReportResult = {
       id,
       type: 'custom',
       passed,
@@ -58,13 +40,12 @@ export class ValidationReport {
       details,
     };
 
-    this.addResult(validationResult);
+    this.addResult(ReportResult);
   }
 
-  private addResult(result: ValidationResult) {
+  private addResult(result: ReportResult) {
     this.summary.results.push(result);
     this.summary.totalTasks++;
-
     if (result.passed) {
       this.summary.passed++;
     } else {
@@ -72,39 +53,34 @@ export class ValidationReport {
     }
   }
 
-  finish(): ValidationSummary {
+  finish(): ReportSummary {
     this.summary.endTime = Date.now();
     this.summary.duration = this.summary.endTime - this.summary.startTime;
     return this.summary;
   }
 
-  getReport(): ValidationSummary {
-    return { ...this.summary };
+  getSummary(): ReportSummary {
+    return this.summary;
   }
 
   printSummary() {
     const report = this.finish();
     const duration = report.duration ? `${report.duration}ms` : 'N/A';
-
-    console.log(`\n ${logger['colorize']('❯', 'yellow')} Package Validation`);
-
-    // Show all results with status indicators
+    console.log(`\n ${logger['colorize']('❯', 'yellow')} Package Report`);
     report.results.forEach(r => {
       const status = r.passed
         ? logger['colorize']('✓', 'green')
         : logger['colorize']('×', 'red');
       console.log(`   ${status} ${r.id}`);
     });
-
     if (report.failed > 0) {
       const separator = '⎯'.repeat(20);
       console.log(
         logger['colorize'](
-          `\n${separator} Failed Validations ${report.failed.toString()} ${separator}`,
+          `\n${separator} Failed Reports ${report.failed.toString()} ${separator}`,
           'red',
         ),
       );
-
       report.results
         .filter(r => !r.passed)
         .forEach(r => {
@@ -114,12 +90,12 @@ export class ValidationReport {
               const path =
                 issue.path.length > 0 ? issue.path.join('.') : 'root';
               console.log(
-                `${logger['colorize'](`ValidationError: ${path} - ${issue.message}`, 'red')}`,
+                `${logger['colorize'](`ReportError: ${path} - ${issue.message}`, 'red')}`,
               );
             });
           } else {
             console.log(
-              `${logger['colorize'](`ValidationError: ${r.message || 'Validation failed'}`, 'red')}`,
+              `${logger['colorize'](`ReportError: ${r.message || 'Report failed'}`, 'red')}`,
             );
           }
         });
@@ -128,13 +104,11 @@ export class ValidationReport {
         logger['colorize'](`\n${separator}${separator}${separator}`, 'red'),
       );
     }
-
     const failedText =
       report.failed > 0
         ? `${logger['colorize'](report.failed + ' failed', 'red')}`
         : 'all passed';
     const passedText = logger['colorize'](report.passed + ' passed', 'green');
-
     if (report.failed > 0) {
       console.log(
         `\n   Packages  ${failedText} | ${passedText} (${report.totalTasks})`,

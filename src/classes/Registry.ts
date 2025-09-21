@@ -1,7 +1,7 @@
 import { RegistryConfig, RegistryInterface } from '../types/Registry.js';
 import { TargetType } from '../types/Target.js';
 import { logger } from '../utils/Logger.js';
-import { ValidationReport } from '../utils/ValidationReport.js';
+import { Report } from '../utils/Report.js';
 import Collection from './Collection.js';
 import TargetFile from './TargetFile.js';
 
@@ -47,7 +47,7 @@ export default class Registry {
   }
 
   async sync() {
-    const report = new ValidationReport();
+    const report = new Report();
     logger.info('Registry sync started');
 
     for (const [, collection] of this.collections) {
@@ -56,7 +56,7 @@ export default class Registry {
 
     report.printSummary();
     logger.info('Registry sync completed');
-    return report.getReport();
+    return report.getSummary();
   }
 
   toJSON(): RegistryInterface {

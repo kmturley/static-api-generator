@@ -6,7 +6,7 @@ import {
 import { SourceMapped } from '../types/Source.js';
 import { TargetType } from '../types/Target.js';
 import { logger } from '../utils/Logger.js';
-import { ValidationReport } from '../utils/ValidationReport.js';
+import { Report } from '../utils/Report.js';
 import Organization from './Organization.js';
 import Package from './Package.js';
 import Source from './Source.js';
@@ -27,7 +27,7 @@ export default class Collection {
     this.id = id;
   }
 
-  addPackage(pkg: Package, report?: ValidationReport) {
+  addPackage(pkg: Package, report?: Report) {
     if (this.validator) {
       const result = this.validator(pkg.get());
       if (report) {
@@ -35,7 +35,7 @@ export default class Collection {
           report.addCustomResult(
             `${pkg.orgId}/${pkg.id}`,
             result,
-            result ? undefined : 'Package validation failed',
+            result ? undefined : 'Package Report failed',
           );
         } else {
           report.addZodResult(`${pkg.orgId}/${pkg.id}`, result);
@@ -100,7 +100,7 @@ export default class Collection {
     }
   }
 
-  async sync(report?: ValidationReport) {
+  async sync(report?: Report) {
     logger.info(`${this.id} sync started`);
     await Promise.all(this.sources.map(s => s.sync()));
     for (const source of this.sources) {
