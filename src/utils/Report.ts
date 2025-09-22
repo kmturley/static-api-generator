@@ -66,7 +66,7 @@ export class Report {
   printSummary() {
     const report = this.finish();
     const duration = report.duration ? `${report.duration}ms` : 'N/A';
-    logger.info(`${logger['colorize']('❯', 'yellow')} Package Report`);
+    logger.info(`${logger['colorize']('❯', 'yellow')} Validation report`);
     report.results.forEach(r => {
       const status = r.passed
         ? logger['colorize']('✓', 'green')

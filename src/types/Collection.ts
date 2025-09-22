@@ -11,7 +11,7 @@ export interface CollectionInterface {
   [orgId: string]: OrganizationInterface;
 }
 
-export type CollectionValidator = (obj: any) => {
+export type CollectionValidator = (pkg: any) => {
   success: boolean;
   error?: any;
 };

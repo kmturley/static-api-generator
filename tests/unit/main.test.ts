@@ -57,6 +57,37 @@ test('Collection class', () => {
   expect(CollectionValidator(collection.toJSON()).success).toBe(true);
 });
 
+test('Collection with custom validator', () => {
+  const collection = new Collection('books', {
+    sources: [],
+    validator: pkg => {
+      if (!pkg.title) {
+        return { success: false, error: { message: 'Title is required' } };
+      }
+      if (pkg.year && pkg.year > new Date().getFullYear()) {
+        return {
+          success: false,
+          error: { message: 'Year cannot be in the future' },
+        };
+      }
+      return { success: true };
+    },
+  });
+
+  const validPkg = new Package('test-org', 'valid-pkg', {
+    title: 'Valid Book',
+    year: 2020,
+  });
+  const invalidPkg = new Package('test-org', 'invalid-pkg', { year: 2030 });
+
+  collection.addPackage(validPkg);
+  collection.addPackage(invalidPkg);
+
+  expect(collection.listPackages()).toHaveLength(1);
+  expect(collection.getPackage('test-org', 'valid-pkg')).toBe(validPkg);
+  expect(collection.getPackage('test-org', 'invalid-pkg')).toBeUndefined();
+});
+
 test('Registry class', () => {
   const registry = new Registry({
     name: 'Test Library',

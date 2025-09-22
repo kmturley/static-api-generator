@@ -31,18 +31,15 @@ export default class Collection {
     if (this.validator) {
       const result = this.validator(pkg.get());
       if (report) {
-        if (typeof result === 'boolean') {
-          report.addCustomResult(
-            `${pkg.orgId}/${pkg.id}`,
-            result,
-            result ? undefined : 'Package Report failed',
-          );
-        } else {
-          report.addZodResult(`${pkg.orgId}/${pkg.id}`, result);
-        }
+        report.addCustomResult(
+          `${pkg.orgId}/${pkg.id}`,
+          result.success,
+          result.error?.message ||
+            (result.success ? undefined : 'Package validation failed'),
+          result.error,
+        );
       }
-      const isValid = typeof result === 'boolean' ? result : result.success;
-      if (!isValid) {
+      if (!result.success) {
         logger.warn(`Invalid package: ${pkg.orgId}/${pkg.id}`);
         return;
       }
@@ -113,9 +110,7 @@ export default class Collection {
         this.addPackage(pkg, report);
       }
     }
-    logger.info(
-      `  Packages:  ${this.listPackages().length}\n`,
-    );
+    logger.info(`  Packages:  ${this.listPackages().length}\n`);
   }
 
   toJSON(): CollectionInterface {
