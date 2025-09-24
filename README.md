@@ -5,6 +5,7 @@ Build and deploy a static API. Features implemented:
 - Import data from different sources:
   - Api endpoints (REST)
   - Files (Csv, Json, Yaml, Xml)
+  - Large-language models (LLMs)
   - Site page crawlers (Html)
 - Searchable registry containing:
   - Collections of packages
@@ -32,7 +33,7 @@ Features planned:
 
 ## How it works
 
-[./src/import.ts](src/import.ts) is used to dynamically load data from various sources (APIs, Files, Sites). When running `npm run dev` the data will be loaded, mapped and saved to the targets, in this case [./data](data). This data can then be reviewed/curated before committed as source code. This is a separate process as it can take a long time to run, and you may experience inconsistent data quality, depending on your sources.
+[./src/import.ts](src/import.ts) is used to dynamically load data from various sources (APIs, Files, LLMs, Sites). When running `npm run dev` the data will be loaded, mapped and saved to the targets, in this case [./data](data). This data can then be reviewed/curated before committed as source code. This is a separate process as it can take a long time to run, and you may experience inconsistent data quality, depending on your sources.
 
 ```
 $ npm run dev

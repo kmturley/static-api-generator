@@ -45,6 +45,7 @@
     "zod": "^4.0.15"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.7.3",
     "crawlee": "^3.14.1",
     "csv": "^6.4.1",
     "glob": "^11.0.3",

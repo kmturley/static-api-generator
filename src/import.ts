@@ -12,6 +12,7 @@ import Collection from './classes/Collection.js';
 import SourceFile from './classes/SourceFile.js';
 import SourceApi from './classes/SourceApi.js';
 import SourceSite from './classes/SourceSite.js';
+// import SourceLLM from './classes/SourceLLM.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
 import { logger, LogLevel } from './utils/Logger.js';
@@ -36,8 +37,8 @@ const apis = new SourceApi({
       orgId: toSlug(source.email),
       pkgId: toSlug(source.name),
       data: {
-        title: source.name,
         author: source.email,
+        title: source.name,
       },
     },
   ],
@@ -47,6 +48,23 @@ const files = new SourceFile({
   format: SourceFormat.Yaml,
   paths: await glob('./data/books/**/*.yaml'),
 });
+
+// const llms = new SourceLLM({
+//   format: SourceFormat.Json,
+//   paths: [],
+//   prompt: 'Generate a example book with author, title and description fields. Output JSON with fields: author, title, description',
+//   model: 'Xenova/gpt2',
+//   mapper: source => [
+//     {
+//       orgId: toSlug(source.author),
+//       pkgId: toSlug(source.title),
+//       data: {
+//         author: source.author,
+//         title: source.title,
+//       },
+//     },
+//   ],
+// });
 
 const pages = new SourceSite({
   format: SourceFormat.Html,
@@ -58,8 +76,8 @@ const pages = new SourceSite({
       orgId: toSlug($('.c-gameDetails_Developer a').text().trim()),
       pkgId: toSlug($('h1').text().trim()),
       data: {
-        title: $('h1').text().trim(),
         author: $('.c-gameDetails_Developer a').text().trim(),
+        title: $('h1').text().trim(),
       },
     },
   ],

@@ -33,12 +33,14 @@ export default abstract class Source {
         return parse(text);
       case SourceFormat.Json:
         return JSON.parse(text);
+      case SourceFormat.Text:
+        return text;
       case SourceFormat.Yaml:
         return yaml.load(text);
       case SourceFormat.Xml:
         return xml2js(text, { ignoreDeclaration: true });
       default:
-        return JSON.parse(text);
+        return text;
     }
   }
 
