@@ -1,9 +1,7 @@
 {
   "adventures-in-coding": {
-    "org": "joe-bloggs",
-    "slug": "adventures-in-coding",
-    "title": "Adventures in Coding",
     "author": "Joe Bloggs",
+    "title": "Adventures in Coding",
     "year": 2025
   }
 }

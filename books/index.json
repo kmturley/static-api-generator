@@ -1,28 +1,22 @@
 {
   "nintendo": {
     "the-legend-of-zelda-ocarina-of-time": {
-      "org": "nintendo",
-      "slug": "the-legend-of-zelda-ocarina-of-time",
-      "title": "The Legend of Zelda: Ocarina of Time",
       "author": "Nintendo",
+      "title": "The Legend of Zelda: Ocarina of Time",
       "year": 1995
     }
   },
   "joe-bloggs": {
     "adventures-in-coding": {
-      "org": "joe-bloggs",
-      "slug": "adventures-in-coding",
-      "title": "Adventures in Coding",
       "author": "Joe Bloggs",
+      "title": "Adventures in Coding",
       "year": 2025
     }
   },
   "eliseogardnerbiz": {
     "id-labore-ex-et-quam-laborum": {
-      "org": "eliseogardnerbiz",
-      "slug": "id-labore-ex-et-quam-laborum",
-      "title": "id labore ex et quam laborum",
       "author": "Eliseo@gardner.biz",
+      "title": "id labore ex et quam laborum",
       "year": 2017
     }
   }
