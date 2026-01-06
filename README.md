@@ -9,7 +9,7 @@ Build and deploy a static API. Features implemented:
   - Site page crawlers (Html)
 - Searchable registry containing:
   - Collections of packages
-  - Group packages by shared attributes
+  - Associate packages between collections
 - Export data to different targets:
   - Files (Csv, Json, Yaml, Xml)
   - Variables in export file pattern
@@ -93,8 +93,16 @@ This repo also contains GitHub Action Workflows to automate some steps:
 
 - Registry: https://kmturley.github.io/static-api-generator
 - Collection: https://kmturley.github.io/static-api-generator/books
-- Group: https://kmturley.github.io/static-api-generator/books/joe-bloggs
-- Package: https://kmturley.github.io/static-api-generator/books/joe-bloggs/adventures-in-coding
+- Package: https://kmturley.github.io/static-api-generator/books/adventures-in-coding
+
+Multiple collections:
+
+- https://kmturley.github.io/static-api-generator/authors
+- https://kmturley.github.io/static-api-generator/books
+
+Associations from another collection:
+
+- https://kmturley.github.io/static-api-generator/authors/joe-bloggs/books
 
 ## Developer docs
 

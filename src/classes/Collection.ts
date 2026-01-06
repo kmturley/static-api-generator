@@ -110,4 +110,67 @@ export default class Collection {
       Array.from(this.packages, ([pkgId, pkg]) => [pkgId, pkg.toJSON()]),
     );
   }
+
+  async exportAssociated(
+    id: string,
+    collection: Collection,
+    targets: TargetFile[],
+  ) {
+    for (const pkg of this.listPackages()) {
+      const sourceData = pkg.get();
+      const associations = sourceData[id];
+
+      if (associations && typeof associations === 'object') {
+        const baseVars = {
+          collection: { id: this.id },
+          package: { id: pkg.id },
+          associatedCollection: { id },
+        };
+
+        for (const target of targets) {
+          if (target.type === TargetType.Collection) {
+            await target.export(
+              {
+                toJSON: () => this.buildAssociated(collection, associations),
+              },
+              baseVars,
+            );
+          } else if (target.type === TargetType.Package) {
+            // Export individual associations packages
+            for (const [packageId, enabled] of Object.entries(associations)) {
+              if (enabled) {
+                const targetPackage = collection.getPackage(packageId);
+                if (targetPackage) {
+                  const packageVars = {
+                    ...baseVars,
+                    associatedPackage: { id: packageId },
+                  };
+                  await target.export(
+                    { toJSON: () => targetPackage.get() },
+                    packageVars,
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private buildAssociated(
+    collection: Collection,
+    associations: Record<string, boolean>,
+  ) {
+    const result: any = {};
+    for (const [packageId, enabled] of Object.entries(associations)) {
+      if (enabled) {
+        const targetPackage = collection.getPackage(packageId);
+        if (targetPackage) {
+          result[packageId] = targetPackage.get();
+        }
+      }
+    }
+    return result;
+  }
 }

@@ -63,38 +63,18 @@ await registry.export([
   }),
 ]);
 
-// Export author books separately
-const authorsCollection = registry.getCollection('authors');
-const booksCollection = registry.getCollection('books');
-if (authorsCollection && booksCollection) {
-  for (const author of authorsCollection.listPackages()) {
-    const authorSlug = author.id;
-    const authorData = author.get();
-    const authorBooks = authorData.books || {};
-
-    const booksData: any = {};
-    for (const bookSlug of Object.keys(authorBooks)) {
-      const matchingBook = booksCollection
-        .listPackages()
-        .find(book => book.id === bookSlug);
-      if (matchingBook) {
-        booksData[matchingBook.id] = matchingBook.get();
-
-        // Export individual book under author books path
-        const bookTarget = new TargetFile({
-          format: TargetFormat.Json,
-          pattern: `./out/authors/${authorSlug}/books/${bookSlug}/index.json`,
-          type: TargetType.Package,
-        });
-        await bookTarget.export({ toJSON: () => matchingBook.get() });
-      }
-    }
-
-    const target = new TargetFile({
-      format: TargetFormat.Json,
-      pattern: `./out/authors/${authorSlug}/books/index.json`,
-      type: TargetType.Collection,
-    });
-    await target.export({ toJSON: () => booksData });
-  }
-}
+// Export associated packages from another collection
+await authors.exportAssociated('books', books, [
+  new TargetFile({
+    format: TargetFormat.Json,
+    pattern:
+      './out/${collection.id}/${package.id}/${associatedCollection.id}/index.json',
+    type: TargetType.Collection,
+  }),
+  new TargetFile({
+    format: TargetFormat.Json,
+    pattern:
+      './out/${collection.id}/${package.id}/${associatedCollection.id}/${associatedPackage.id}/index.json',
+    type: TargetType.Package,
+  }),
+]);
