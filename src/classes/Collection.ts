@@ -126,7 +126,6 @@ export default class Collection {
           package: { id: pkg.id },
           associatedCollection: { id },
         };
-
         for (const target of targets) {
           if (target.type === TargetType.Collection) {
             await target.export(
@@ -136,14 +135,13 @@ export default class Collection {
               baseVars,
             );
           } else if (target.type === TargetType.Package) {
-            // Export individual associations packages
-            for (const [packageId, enabled] of Object.entries(associations)) {
+            for (const [pkgId, enabled] of Object.entries(associations)) {
               if (enabled) {
-                const targetPackage = collection.getPackage(packageId);
+                const targetPackage = collection.getPackage(pkgId);
                 if (targetPackage) {
                   const packageVars = {
                     ...baseVars,
-                    associatedPackage: { id: packageId },
+                    associatedPackage: { id: pkgId },
                   };
                   await target.export(
                     { toJSON: () => targetPackage.get() },
@@ -163,11 +161,11 @@ export default class Collection {
     associations: Record<string, boolean>,
   ) {
     const result: any = {};
-    for (const [packageId, enabled] of Object.entries(associations)) {
+    for (const [pkgId, enabled] of Object.entries(associations)) {
       if (enabled) {
-        const targetPackage = collection.getPackage(packageId);
+        const targetPackage = collection.getPackage(pkgId);
         if (targetPackage) {
-          result[packageId] = targetPackage.get();
+          result[pkgId] = targetPackage.get();
         }
       }
     }
