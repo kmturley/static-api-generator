@@ -27,7 +27,6 @@ describe('SourceLLM', () => {
       model: 'test-model',
       mapper: (source: any) => [
         {
-          orgId: 'test-org',
           pkgId: 'test-pkg',
           data: source,
         },
@@ -47,7 +46,6 @@ describe('SourceLLM', () => {
       model: 'test-model',
       mapper: (source: any) => [
         {
-          orgId: 'test-org',
           pkgId: 'test-pkg',
           data: JSON.parse(source),
         },
@@ -60,7 +58,6 @@ describe('SourceLLM', () => {
     const items = sourceLLM.get();
     expect(items).toHaveLength(1);
     expect(items[0]).toEqual({
-      orgId: 'test-org',
       pkgId: 'test-pkg',
       data: {
         title: 'Test Book',

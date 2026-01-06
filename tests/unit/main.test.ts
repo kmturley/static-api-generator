@@ -2,13 +2,11 @@ import { expect, test } from 'vitest';
 import { glob } from 'glob';
 
 import Collection from '../../src/classes/Collection.js';
-import Organization from '../../src/classes/Organization.js';
 import Package from '../../src/classes/Package.js';
 import Registry from '../../src/classes/Registry.js';
 import SourceFile from '../../src/classes/SourceFile.js';
 import Target from '../../src/classes/Target.js';
 import { CollectionValidator } from '../../src/types/Collection.js';
-import { OrganizationValidator } from '../../src/types/Organization.js';
 import { PackageValidator } from '../../src/types/Package.js';
 import { RegistryValidator } from '../../src/types/Registry.js';
 import { SourceFormat } from '../../src/types/Source.js';
@@ -18,12 +16,11 @@ import { logger, LogLevel } from '../../src/utils/Logger.js';
 logger.setLevel(LogLevel.INFO);
 
 test('Package class', () => {
-  const pkg = new Package('test-org', 'test-pkg', {
+  const pkg = new Package('test-pkg', {
     title: 'Test Book',
     author: 'Test Author',
   });
 
-  expect(pkg.orgId).toBe('test-org');
   expect(pkg.id).toBe('test-pkg');
   expect(pkg.get()).toEqual({ title: 'Test Book', author: 'Test Author' });
   expect(PackageValidator(pkg.toJSON()).success).toBe(true);
@@ -32,29 +29,17 @@ test('Package class', () => {
   expect(pkg.get().year).toBe(2023);
 });
 
-test('Organization class', () => {
-  const org = new Organization('test-org');
-  const pkg = new Package('test-org', 'test-pkg', { title: 'Test Book' });
-
-  org.addPackage(pkg);
-
-  expect(org.id).toBe('test-org');
-  expect(org.getPackage('test-pkg')).toBe(pkg);
-  expect(org.listPackages()).toHaveLength(1);
-  expect(OrganizationValidator(org.toJSON()).success).toBe(true);
-});
-
 test('Collection class', () => {
   const collection = new Collection('books', { sources: [] });
-  const pkg = new Package('test-org', 'test-pkg', { title: 'Test Book' });
+  const pkg = new Package('test-pkg', { title: 'Test Book' });
 
   collection.addPackage(pkg);
 
+  expect(CollectionValidator(collection.toJSON()).success).toBe(true);
   expect(collection.id).toBe('books');
-  expect(collection.getPackage('test-org', 'test-pkg')).toBe(pkg);
+  expect(collection.getPackage('test-pkg')).toBe(pkg);
   expect(collection.listPackages()).toHaveLength(1);
   expect(collection.search('test')).toHaveLength(1);
-  expect(CollectionValidator(collection.toJSON()).success).toBe(true);
 });
 
 test('Collection with custom validator', () => {
@@ -74,18 +59,18 @@ test('Collection with custom validator', () => {
     },
   });
 
-  const validPkg = new Package('test-org', 'valid-pkg', {
+  const validPkg = new Package('valid-pkg', {
     title: 'Valid Book',
     year: 2020,
   });
-  const invalidPkg = new Package('test-org', 'invalid-pkg', { year: 2030 });
+  const invalidPkg = new Package('invalid-pkg', { year: 2030 });
 
   collection.addPackage(validPkg);
   collection.addPackage(invalidPkg);
 
   expect(collection.listPackages()).toHaveLength(1);
-  expect(collection.getPackage('test-org', 'valid-pkg')).toBe(validPkg);
-  expect(collection.getPackage('test-org', 'invalid-pkg')).toBeUndefined();
+  expect(collection.getPackage('valid-pkg')).toBe(validPkg);
+  expect(collection.getPackage('invalid-pkg')).toBeUndefined();
 });
 
 test('Registry class', () => {

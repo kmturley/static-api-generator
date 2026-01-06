@@ -8,6 +8,7 @@ import Collection from './classes/Collection.js';
 import Registry from './classes/Registry.js';
 import { SourceFormat } from './types/Source.js';
 import { PackageValidator } from './types/Package.js';
+import { AuthorValidator } from './types/Author.js';
 import SourceFile from './classes/SourceFile.js';
 import TargetFile from './classes/TargetFile.js';
 import { TargetFormat, TargetType } from './types/Target.js';
@@ -21,16 +22,27 @@ const registry = new Registry({
   version: '1.0.0',
 });
 
-const filesIn = new SourceFile({
+const authorsIn = new SourceFile({
   format: SourceFormat.Yaml,
-  paths: await glob('./data/books/**/*.yaml'),
+  paths: await glob('./data/authors/*.yaml'),
+});
+
+const booksIn = new SourceFile({
+  format: SourceFormat.Yaml,
+  paths: await glob('./data/books/*.yaml'),
+});
+
+const authors = new Collection('authors', {
+  sources: [authorsIn],
+  validator: AuthorValidator,
 });
 
 const books = new Collection('books', {
-  sources: [filesIn],
+  sources: [booksIn],
   validator: PackageValidator,
 });
 
+registry.addCollection(authors);
 registry.addCollection(books);
 await registry.sync();
 await registry.export([
@@ -46,13 +58,43 @@ await registry.export([
   }),
   new TargetFile({
     format: TargetFormat.Json,
-    pattern: './out/${collection.id}/${organization.id}/index.json',
-    type: TargetType.Org,
-  }),
-  new TargetFile({
-    format: TargetFormat.Json,
-    pattern:
-      './out/${collection.id}/${organization.id}/${package.id}/index.json',
+    pattern: './out/${collection.id}/${package.id}/index.json',
     type: TargetType.Package,
   }),
 ]);
+
+// Export author books separately
+const authorsCollection = registry.getCollection('authors');
+const booksCollection = registry.getCollection('books');
+if (authorsCollection && booksCollection) {
+  for (const author of authorsCollection.listPackages()) {
+    const authorSlug = author.id;
+    const authorData = author.get();
+    const authorBooks = authorData.books || {};
+
+    const booksData: any = {};
+    for (const bookSlug of Object.keys(authorBooks)) {
+      const matchingBook = booksCollection
+        .listPackages()
+        .find(book => book.id === bookSlug);
+      if (matchingBook) {
+        booksData[matchingBook.id] = matchingBook.get();
+
+        // Export individual book under author books path
+        const bookTarget = new TargetFile({
+          format: TargetFormat.Json,
+          pattern: `./out/authors/${authorSlug}/books/${bookSlug}/index.json`,
+          type: TargetType.Package,
+        });
+        await bookTarget.export({ toJSON: () => matchingBook.get() });
+      }
+    }
+
+    const target = new TargetFile({
+      format: TargetFormat.Json,
+      pattern: `./out/authors/${authorSlug}/books/index.json`,
+      type: TargetType.Collection,
+    });
+    await target.export({ toJSON: () => booksData });
+  }
+}

@@ -7,21 +7,20 @@ import { SourceMapped } from '../types/Source.js';
 import { TargetType } from '../types/Target.js';
 import { logger } from '../utils/Logger.js';
 import { Report } from '../utils/Report.js';
-import Organization from './Organization.js';
 import Package from './Package.js';
 import Source from './Source.js';
 import TargetFile from './TargetFile.js';
 
 export default class Collection {
   private config: CollectionConfig;
-  private orgs: Map<string, Organization>;
+  private packages: Map<string, Package>;
   private sources: Source[] = [];
   private validator?: CollectionValidator;
   id: string;
 
   constructor(id: string, config: CollectionConfig) {
     this.config = config;
-    this.orgs = new Map();
+    this.packages = new Map();
     this.sources = this.config.sources;
     this.validator = this.config.validator;
     this.id = id;
@@ -32,7 +31,7 @@ export default class Collection {
       const result = this.validator(pkg.get());
       if (report) {
         report.addCustomResult(
-          `${pkg.orgId}/${pkg.id}`,
+          pkg.id,
           result.success,
           result.error?.message ||
             (result.success ? undefined : 'Package validation failed'),
@@ -40,42 +39,35 @@ export default class Collection {
         );
       }
       if (!result.success) {
-        logger.warn(`Invalid package: ${pkg.orgId}/${pkg.id}`);
+        logger.warn(`Invalid package: ${pkg.id}`);
         return;
       }
     }
 
-    if (!this.orgs.has(pkg.orgId)) {
-      this.orgs.set(pkg.orgId, new Organization(pkg.orgId));
+    const existing = this.packages.get(pkg.id);
+    if (existing) {
+      logger.info(`  📦 ${pkg.id} (merge)`);
+      existing.merge(pkg.get());
+    } else {
+      logger.info(`  📦 ${pkg.id}`);
+      this.packages.set(pkg.id, pkg);
     }
-    this.orgs.get(pkg.orgId)!.addPackage(pkg);
   }
 
-  getPackage(orgId: string, id: string) {
-    const org = this.orgs.get(orgId);
-    return org?.getPackage(id);
+  getPackage(id: string) {
+    return this.packages.get(id);
   }
 
   listPackages() {
-    const packages: Package[] = [];
-    for (const org of this.orgs.values()) {
-      packages.push(...org.listPackages());
-    }
-    return packages;
+    return Array.from(this.packages.values());
   }
 
-  removePackage(orgId: string, id: string) {
-    const org = this.orgs.get(orgId);
-    if (org) {
-      org.packages.delete(id);
-      if (org.packages.size === 0) {
-        this.orgs.delete(orgId);
-      }
-    }
+  removePackage(id: string) {
+    this.packages.delete(id);
   }
 
   reset() {
-    this.orgs.clear();
+    this.packages.clear();
   }
 
   search(query: string) {
@@ -92,8 +84,8 @@ export default class Collection {
         await target.export(this, nextVars);
       }
     }
-    for (const [, org] of this.orgs) {
-      await org.export(targets, nextVars);
+    for (const pkg of this.packages.values()) {
+      await pkg.export(targets, nextVars);
     }
   }
 
@@ -106,7 +98,7 @@ export default class Collection {
       const items: SourceMapped[] = source.get();
       logger.info(`  ${source.constructor.name}:`);
       for (const item of items) {
-        const pkg = new Package(item.orgId, item.pkgId, item.data);
+        const pkg = new Package(item.pkgId, item.data);
         this.addPackage(pkg, report);
       }
     }
@@ -115,7 +107,7 @@ export default class Collection {
 
   toJSON(): CollectionInterface {
     return Object.fromEntries(
-      Array.from(this.orgs, ([orgId, org]) => [orgId, org.toJSON()]),
+      Array.from(this.packages, ([pkgId, pkg]) => [pkgId, pkg.toJSON()]),
     );
   }
 }

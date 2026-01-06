@@ -16,11 +16,10 @@ test('Target pattern replacement works correctly', async () => {
       .replace('out/', '')
       .replace('/index.json', '')
       .split('/');
-    if (pathParts.length === 3) {
-      const [collectionId, orgId, id] = pathParts;
+    if (pathParts.length === 2) {
+      const [collectionId, id] = pathParts;
       const content = JSON.parse(await readFile(file, 'utf-8'));
       expect(collectionId).toBe(COLLECTION_ID);
-      expect(orgId).toBeTruthy();
       expect(id).toBeTruthy();
       expect(content).toHaveProperty('title');
     }
