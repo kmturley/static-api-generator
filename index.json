@@ -2,27 +2,31 @@
   "name": "My library",
   "url": "https://library.com",
   "version": "1.0.0",
-  "books": {
-    "nintendo": {
-      "the-legend-of-zelda-ocarina-of-time": {
-        "author": "Nintendo",
-        "title": "The Legend of Zelda: Ocarina of Time",
-        "year": 1995
-      }
-    },
+  "authors": {
     "joe-bloggs": {
-      "adventures-in-coding": {
-        "author": "Joe Bloggs",
-        "title": "Adventures in Coding",
-        "year": 2025
+      "name": "Joe Bloggs",
+      "bio": "Software developer and author",
+      "website": "https://joebloggs.dev",
+      "books": {
+        "adventures-in-coding": true
       }
+    }
+  },
+  "books": {
+    "the-legend-of-zelda-ocarina-of-time": {
+      "author": "Nintendo",
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "year": 1995
     },
-    "eliseogardnerbiz": {
-      "id-labore-ex-et-quam-laborum": {
-        "author": "Eliseo@gardner.biz",
-        "title": "id labore ex et quam laborum",
-        "year": 2017
-      }
+    "id-labore-ex-et-quam-laborum": {
+      "author": "Eliseo@gardner.biz",
+      "title": "id labore ex et quam laborum",
+      "year": 2017
+    },
+    "adventures-in-coding": {
+      "author": "Joe Bloggs",
+      "title": "Adventures in Coding",
+      "year": 2025
     }
   }
 }

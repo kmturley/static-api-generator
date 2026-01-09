@@ -1,0 +1,10 @@
+{
+  "joe-bloggs": {
+    "name": "Joe Bloggs",
+    "bio": "Software developer and author",
+    "website": "https://joebloggs.dev",
+    "books": {
+      "adventures-in-coding": true
+    }
+  }
+}
