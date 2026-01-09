@@ -34,7 +34,6 @@ const apis = new SourceApi({
   paths: ['https://jsonplaceholder.typicode.com/comments/1'],
   mapper: source => [
     {
-      orgId: toSlug(source.email),
       pkgId: toSlug(source.name),
       data: {
         author: source.email,
@@ -46,7 +45,7 @@ const apis = new SourceApi({
 
 const files = new SourceFile({
   format: SourceFormat.Yaml,
-  paths: await glob('./data/books/**/*.yaml'),
+  paths: await glob('./data/books/*.yaml'),
 });
 
 // const llms = new SourceLLM({
@@ -73,7 +72,6 @@ const pages = new SourceSite({
   ],
   mapper: $ => [
     {
-      orgId: toSlug($('.c-gameDetails_Developer a').text().trim()),
       pkgId: toSlug($('h1').text().trim()),
       data: {
         author: $('.c-gameDetails_Developer a').text().trim(),
@@ -93,7 +91,7 @@ await registry.sync();
 await registry.export([
   new TargetFile({
     format: TargetFormat.Yaml,
-    pattern: './data/${collection.id}/${organization.id}/${package.id}.yaml',
+    pattern: './data/${collection.id}/${package.id}.yaml',
     type: TargetType.Package,
   }),
 ]);

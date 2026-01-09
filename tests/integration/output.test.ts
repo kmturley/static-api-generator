@@ -3,8 +3,6 @@ import { readFile } from 'fs/promises';
 import { execSync } from 'child_process';
 import { glob } from 'glob';
 
-const COLLECTION_ID = 'books';
-
 test.beforeAll(async () => {
   execSync('npm run build && npm start', { stdio: 'inherit' });
 });
@@ -16,13 +14,14 @@ test('Target pattern replacement works correctly', async () => {
       .replace('out/', '')
       .replace('/index.json', '')
       .split('/');
-    if (pathParts.length === 3) {
-      const [collectionId, orgId, id] = pathParts;
+    if (pathParts.length === 2) {
+      const [collectionId, id] = pathParts;
       const content = JSON.parse(await readFile(file, 'utf-8'));
-      expect(collectionId).toBe(COLLECTION_ID);
-      expect(orgId).toBeTruthy();
+      expect(['authors', 'books']).toContain(collectionId);
       expect(id).toBeTruthy();
-      expect(content).toHaveProperty('title');
+      expect(content).toHaveProperty(
+        collectionId === 'authors' ? 'name' : 'title',
+      );
     }
   }
 });
@@ -35,17 +34,12 @@ test('Variable substitution creates correct folder structure', async () => {
     if (typeof collection === 'object' && collection !== null) {
       const collectionPath = `./out/${collectionId}/index.json`;
       expect(await readFile(collectionPath, 'utf-8')).toBeTruthy();
-      for (const [orgId, org] of Object.entries(
+      for (const [pkgId, pkg] of Object.entries(
         collection as Record<string, any>,
       )) {
-        const orgPath = `./out/${collectionId}/${orgId}/index.json`;
-        expect(await readFile(orgPath, 'utf-8')).toBeTruthy();
-        for (const [id] of Object.entries(org as Record<string, any>)) {
-          const pkgPath = `./out/${collectionId}/${orgId}/${id}/index.json`;
-          const pkgContent = JSON.parse(await readFile(pkgPath, 'utf-8'));
-          expect(pkgContent).toHaveProperty('title');
-          expect(typeof pkgContent.title).toBe('string');
-        }
+        const pkgPath = `./out/${collectionId}/${pkgId}/index.json`;
+        const pkgContent = JSON.parse(await readFile(pkgPath, 'utf-8'));
+        expect(pkgContent).toEqual(pkg);
       }
     }
   }
@@ -72,17 +66,14 @@ test('Pattern variables match actual data structure', async () => {
   );
   for (const [collectionId, collection] of Object.entries(registryContent)) {
     if (typeof collection === 'object' && collection !== null) {
-      expect(collectionId).toBe(COLLECTION_ID);
-      for (const [orgId, org] of Object.entries(
+      expect(['authors', 'books']).toContain(collectionId);
+      for (const [pkgId, pkg] of Object.entries(
         collection as Record<string, any>,
       )) {
-        expect(orgId).toMatch(/^[a-z0-9-]+$/);
-        for (const [id, pkg] of Object.entries(org as Record<string, any>)) {
-          expect(id).toMatch(/^[a-z0-9-]+$/);
-          const pkgFile = `./out/${collectionId}/${orgId}/${id}/index.json`;
-          const pkgContent = JSON.parse(await readFile(pkgFile, 'utf-8'));
-          expect(pkgContent).toEqual(pkg);
-        }
+        expect(pkgId).toMatch(/^[a-z0-9-]+$/);
+        const pkgFile = `./out/${collectionId}/${pkgId}/index.json`;
+        const pkgContent = JSON.parse(await readFile(pkgFile, 'utf-8'));
+        expect(pkgContent).toEqual(pkg);
       }
     }
   }

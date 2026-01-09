@@ -14,7 +14,6 @@ export enum SourceFormat {
 }
 
 export interface SourceMapped {
-  orgId: string;
   pkgId: string;
   data: unknown;
 }

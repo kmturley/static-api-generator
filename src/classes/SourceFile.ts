@@ -25,7 +25,6 @@ export default class SourceFile extends Source {
     const parts = path.split(/[/.]+/).slice(0, -1);
     return [
       {
-        orgId: parts[parts.length - 2],
         pkgId: parts[parts.length - 1],
         data: source,
       },

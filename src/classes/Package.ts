@@ -3,12 +3,10 @@ import { TargetType } from '../types/Target.js';
 import TargetFile from './TargetFile.js';
 
 export default class Package {
-  orgId: string;
   id: string;
   data: any;
 
-  constructor(orgId: string, id: string, data: any) {
-    this.orgId = orgId;
+  constructor(id: string, data: any) {
     this.id = id;
     this.data = data;
   }

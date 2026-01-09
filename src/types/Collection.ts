@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import Source from '../classes/Source.js';
-import { OrganizationInterface, OrganizationSchema } from './Organization.js';
+import { PackageInterface, PackageSchema } from './Package.js';
 
 export interface CollectionConfig {
   sources: Source[];
@@ -8,7 +8,7 @@ export interface CollectionConfig {
 }
 
 export interface CollectionInterface {
-  [orgId: string]: OrganizationInterface;
+  [id: string]: PackageInterface;
 }
 
 export type CollectionValidator = (pkg: any) => {
@@ -16,7 +16,7 @@ export type CollectionValidator = (pkg: any) => {
   error?: any;
 };
 
-export const CollectionSchema = z.record(z.string(), OrganizationSchema);
+export const CollectionSchema = z.record(z.string(), PackageSchema);
 
 export const CollectionValidator = (item: CollectionInterface) =>
   CollectionSchema.safeParse(item);
