@@ -19,7 +19,9 @@ test('Target pattern replacement works correctly', async () => {
       const content = JSON.parse(await readFile(file, 'utf-8'));
       expect(['authors', 'books']).toContain(collectionId);
       expect(id).toBeTruthy();
-      expect(content).toHaveProperty(collectionId === 'authors' ? 'name' : 'title');
+      expect(content).toHaveProperty(
+        collectionId === 'authors' ? 'name' : 'title',
+      );
     }
   }
 });
